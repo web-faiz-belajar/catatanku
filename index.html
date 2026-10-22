@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CatatanKu</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#f3f5fb;--card:#fff;--text:#20243a;--muted:#6c7285;--primary:#6366f1;--border:#e2e5ef}
+body.dark{--bg:#121522;--card:#1c2132;--text:#f4f5ff;--muted:#b1b7cb;--border:#343a50}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,sans-serif;transition:.2s}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--primary);color:white}
+input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)}
+textarea{min-height:140px;resize:vertical}
+.wrap{max-width:1050px;margin:auto;padding:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px}
+h1,h2,h3,p{margin-top:0}
+.muted{color:var(--muted);font-size:14px}
+.stack{display:grid;gap:12px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+#app{display:none}
+.note{border:1px solid var(--border);border-radius:14px;padding:15px;margin-top:12px;overflow-wrap:anywhere}
+.note h3{margin-bottom:8px}
+.note pre{white-space:pre-wrap;font:inherit}
+.small{font-size:13px}
+.secondary{background:var(--border);color:var(--text)}
+.danger{background:#dc2626}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#message{white-space:pre-wrap;margin:12px 0;color:var(--primary)}
+.hidden{display:none!important}
+label{display:block;font-size:14px;margin-bottom:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>📝 CatatanKu</h1>
+      <p class="muted">Ruang pribadi untuk semua idemu.</p>
+    </div>
+    <button class="secondary" id="themeBtn">🌙 Tema</button>
+  </header>
+
+  <div id="message" role="status"></div>
+
+  <section id="auth" class="card">
+    <h2 id="authTitle">Masuk ke CatatanKu</h2>
+    <p class="muted">Catatanmu tersimpan online di akunmu.</p>
+    <form id="authForm" class="stack">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" required>
+      </div>
+      <div>
+        <label for="password">Kata sandi</label>
+        <input id="password" type="password" minlength="6" autocomplete="current-password" required>
+      </div>
+      <button id="authSubmit">Login</button>
+    </form>
+    <p style="margin-top:14px">
+      <button class="secondary" id="switchAuth">Belum punya akun? Daftar</button>
+    </p>
+  </section>
+
+  <main id="app">
+    <section class="card">
+      <div class="top">
+        <div>
+          <h2>Catatan pribadimu</h2>
+          <p id="userEmail" class="muted"></p>
+        </div>
+        <button class="danger" id="logoutBtn">Logout</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 id="formTitle">✍️ Buat catatan</h2>
+      <form id="noteForm" class="stack">
+        <input id="noteTitle" placeholder="Judul catatan" maxlength="150" required>
+        <select id="category">
+          <option>Pribadi</option>
+          <option>Sekolah</option>
+          <option>TJKT</option>
+          <option>Ide</option>
+          <option>Pekerjaan</option>
+        </select>
+        <textarea id="content" placeholder="Tulis catatanmu di sini..."></textarea>
+        <label class="row"><input id="favorite" type="checkbox" style="width:auto"> Jadikan favorit</label>
+        <label class="row"><input id="checklistMode" type="checkbox" style="width:auto"> Ini checklist tugas</label>
+        <div id="checklistArea" class="hidden">
+          <label for="checkItems">Satu tugas per baris. Awali tugas selesai dengan [x].</label>
+          <textarea id="checkItems" placeholder="Contoh:&#10;Belajar subnetting&#10;[x] Membaca materi DHCP"></textarea>
+        </div>
+        <div class="row">
+          <button id="saveBtn">Simpan catatan</button>
+          <button type="button" class="secondary hidden" id="cancelEdit">Batal edit</button>
+        </div>
+      </form>
+      <p class="muted small">Catatan tersimpan saat kamu menekan tombol simpan.</p>
+    </section>
+
+    <section class="card">
+      <h2>📚 Semua catatan</h2>
+      <div class="stack">
+        <input id="search" placeholder="Cari judul atau isi catatan...">
+        <select id="filterCategory">
+          <option value="">Semua kategori</option>
+          <option>Pribadi</option><option>Sekolah</option>
+          <option>TJKT</option><option>Ide</option><option>Pekerjaan</option>
+        </select>
+        <label class="row"><input id="onlyFavorites" type="checkbox" style="width:auto"> Tampilkan favorit saja</label>
+      </div>
+      <p id="count" class="muted"></p>
+      <div id="notes"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+  const SUPABASE_URL = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3dWh0bnpqaHRjbWJscXhvdmdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2ODI1MDMsImV4cCI6MjEwODI1ODUwM30.-11Cm2qkZIg7oevLUxDjA_yUBW5VMeBC_Fa6euvCgh8";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
+
+  const $ = id => document.getElementById(id);
+  const message = text => $("message").textContent = text;
+  const configOK = SUPABASE_URL.startsWith("https://") &&
+  (SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
+   SUPABASE_PUBLISHABLE_KEY.startsWith("eyJ"));
+
+  if (!window.supabase) {
+    message("Gagal memuat pustaka aplikasi. Periksa koneksi internet lalu muat ulang.");
+    return;
+  }
+  if (!configOK) {
+    message("Konfigurasi belum lengkap. Ganti SUPABASE_URL dan SUPABASE_PUBLISHABLE_KEY dengan nilai dari proyek Supabase.");
+    return;
+  }
+
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  let user = null, notes = [], editingId = null, isSignup = false;
+
+  $("themeBtn").onclick = () => {
+    document.body.classList.toggle("dark");
+    $("themeBtn").textContent = document.body.classList.contains("dark") ? "☀️ Tema" : "🌙 Tema";
+  };
+  $("switchAuth").onclick = () => {
+    isSignup = !isSignup;
+    $("authTitle").textContent = isSignup ? "Buat akun CatatanKu" : "Masuk ke CatatanKu";
+    $("authSubmit").textContent = isSignup ? "Daftar" : "Login";
+    $("password").autocomplete = isSignup ? "new-password" : "current-password";
+    $("switchAuth").textContent = isSignup ? "Sudah punya akun? Login" : "Belum punya akun? Daftar";
+    message("");
+  };
+
+  $("authForm").onsubmit = async e => {
+    e.preventDefault();
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    $("authSubmit").disabled = true;
+    try {
+      if (isSignup) {
+        const {data,error} = await db.auth.signUp({email,password});
+        if (error) throw error;
+        if (!data.session) {
+          message("Pendaftaran berhasil. Periksa email untuk konfirmasi, lalu login.");
+        } else message("Akun berhasil dibuat.");
+      } else {
+        const {error} = await db.auth.signInWithPassword({email,password});
+        if (error) throw error;
+        message("Login berhasil.");
+      }
+    } catch(err) { message("Gagal: " + err.message); }
+    finally { $("authSubmit").disabled = false; }
+  };
+
+  $("logoutBtn").onclick = async () => {
+    const {error} = await db.auth.signOut();
+    if (error) message("Gagal logout: " + error.message);
+  };
+
+  $("checklistMode").onchange = () =>
+    $("checklistArea").classList.toggle("hidden", !$("checklistMode").checked);
+
+  function resetForm() {
+    editingId = null;
+    $("noteForm").reset();
+    $("formTitle").textContent = "✍️ Buat catatan";
+    $("saveBtn").textContent = "Simpan catatan";
+    $("cancelEdit").classList.add("hidden");
+    $("checklistArea").classList.add("hidden");
+  }
+  $("cancelEdit").onclick = resetForm;
+
+  $("noteForm").onsubmit = async e => {
+    e.preventDefault();
+    if (!user) return;
+    const checklist = $("checklistMode").checked;
+    const checklistItems = checklist
+      ? $("checkItems").value.split("\n").map(line => ({
+          text: line.replace(/^\[x\]\s*/i,"").trim(),
+          done: /^\[x\]\s*/i.test(line)
+        })).filter(item => item.text)
+      : [];
+    const record = {
+      title: $("noteTitle").value.trim(),
+      content: $("content").value,
+      category: $("category").value,
+      is_favorite: $("favorite").checked,
+      is_checklist: checklist,
+      checklist_items: checklistItems,
+      updated_at: new Date().toISOString()
+    };
+    $("saveBtn").disabled = true;
+    try {
+      let result;
+      if (editingId) {
+        result = await db.from("notes").update(record).eq("id",editingId).eq("user_id",user.id);
+      } else {
+        result = await db.from("notes").insert({...record,user_id:user.id});
+      }
+      if (result.error) throw result.error;
+      message("Catatan berhasil disimpan.");
+      resetForm();
+      await loadNotes();
+    } catch(err) { message("Gagal menyimpan: " + err.message); }
+    finally { $("saveBtn").disabled = false; }
+  };
+
+  function renderNotes() {
+    const query = $("search").value.toLowerCase().trim();
+    const category = $("filterCategory").value;
+    const fav = $("onlyFavorites").checked;
+    const shown = notes.filter(n =>
+      (!query || (n.title + " " + n.content).toLowerCase().includes(query)) &&
+      (!category || n.category === category) &&
+      (!fav || n.is_favorite)
+    );
+    $("count").textContent = `${shown.length} catatan`;
+    $("notes").replaceChildren();
+    if (!shown.length) {
+      $("notes").textContent = "Belum ada catatan yang cocok.";
+      return;
+    }
+    for (const n of shown) {
+      const box = document.createElement("article");
+      box.className = "note";
+      const title = document.createElement("h3");
+      title.textContent = (n.is_favorite ? "⭐ " : "") + n.title;
+      const meta = document.createElement("p");
+      meta.className = "muted small";
+      meta.textContent = n.category + " • " + new Date(n.updated_at || n.created_at).toLocaleString("id-ID");
+      box.append(title,meta);
+      if (n.is_checklist && Array.isArray(n.checklist_items)) {
+        for (const item of n.checklist_items) {
+          const line = document.createElement("label");
+          line.className = "row";
+          const cb = document.createElement("input");
+          cb.type = "checkbox"; cb.checked = !!item.done; cb.style.width = "auto";
+          cb.onchange = () => updateChecklist(n,item.text,cb.checked);
+          const span = document.createElement("span"); span.textContent = item.text;
+          line.append(cb,span); box.append(line);
+        }
+      } else {
+        const body = document.createElement("pre");
+        body.textContent = n.content || "";
+        box.append(body);
+      }
+      const actions = document.createElement("div");
+      actions.className = "row";
+      const edit = document.createElement("button");
+      edit.textContent = "Edit"; edit.onclick = () => editNote(n);
+      const favorite = document.createElement("button");
+      favorite.className = "secondary";
+      favorite.textContent = n.is_favorite ? "Hapus favorit" : "Jadikan favorit";
+      favorite.onclick = () => toggleFavorite(n);
+      const del = document.createElement("button");
+      del.className = "danger"; del.textContent = "Hapus";
+      del.onclick = () => deleteNote(n);
+      actions.append(edit,favorite,del); box.append(actions);
+      $("notes").append(box);
+    }
+  }
+
+  async function loadNotes() {
+    const {data,error} = await db.from("notes").select("*").order("updated_at",{ascending:false});
+    if (error) { message("Gagal memuat catatan: " + error.message); return; }
+    notes = data || []; renderNotes();
+  }
+
+  function editNote(n) {
+    editingId = n.id;
+    $("noteTitle").value = n.title;
+    $("content").value = n.content || "";
+    $("category").value = n.category;
+    $("favorite").checked = n.is_favorite;
+    $("checklistMode").checked = n.is_checklist;
+    $("checklistArea").classList.toggle("hidden",!n.is_checklist);
+    $("checkItems").value = (n.checklist_items || []).map(i => (i.done ? "[x] " : "") + i.text).join("\n");
+    $("formTitle").textContent = "✏️ Edit catatan";
+    $("saveBtn").textContent = "Simpan perubahan";
+    $("cancelEdit").classList.remove("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  async function updateChecklist(n,text,done) {
+    const items = (n.checklist_items || []).map(i => i.text === text ? {...i,done} : i);
+    const {error} = await db.from("notes").update({checklist_items:items,updated_at:new Date().toISOString()})
+      .eq("id",n.id).eq("user_id",user.id);
+    if (error) message("Gagal memperbarui checklist: " + error.message);
+    else await loadNotes();
+  }
+  async function toggleFavorite(n) {
+    const {error} = await db.from("notes").update({is_favorite:!n.is_favorite,updated_at:new Date().toISOString()})
+      .eq("id",n.id).eq("user_id",user.id);
+    if (error) message("Gagal memperbarui favorit: " + error.message);
+    else await loadNotes();
+  }
+  async function deleteNote(n) {
+    if (!confirm("Hapus catatan ini? Tindakan ini tidak bisa dibatalkan.")) return;
+    const {error} = await db.from("notes").delete().eq("id",n.id).eq("user_id",user.id);
+    if (error) message("Gagal menghapus: " + error.message);
+    else { message("Catatan dihapus."); await loadNotes(); }
+  }
+  $("search").oninput = renderNotes;
+  $("filterCategory").onchange = renderNotes;
+  $("onlyFavorites").onchange = renderNotes;
+
+  function showApp(sessionUser) {
+    user = sessionUser || null;
+    $("auth").style.display = user ? "none" : "block";
+    $("app").style.display = user ? "block" : "none";
+    $("userEmail").textContent = user ? user.email : "";
+    if (user) loadNotes();
+    else { notes = []; $("notes").replaceChildren(); resetForm(); }
+  }
+  db.auth.onAuthStateChange((_event,session) => showApp(session?.user || null));
+  db.auth.getSession().then(({data}) => showApp(data.session?.user || null));
+})();
+</script>
+</body>
+</html>
