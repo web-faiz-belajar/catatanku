@@ -387,21 +387,55 @@ body:not(.dark) #notes > * {
   line-height: 1.6;
 }
 
+.top {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+  padding: 24px 12px;
+}
+
+.header-content {
+  width: 100%;
+  text-align: center;
+}
+
+.header-content h1 {
+  margin-bottom: 16px;
+}
+
+.header-content .creator {
+  margin-bottom: 12px;
+}
+
+.header-content .muted {
+  margin-bottom: 0;
+}
+
+#themeBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: auto;
+}
+
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="top">
-    <div>
-      <h1>📝 CatatanKu</h1>
-       <p class="creator">
-        Dibuat oleh: Muhammad Al Faiz<br>
-        SMK Pasundan 4 Bandung
-       </p>
-      <p class="muted">Ruang pribadi untuk semua idemu.</p>
-    </div>
-    <button class="secondary" id="themeBtn">🌙 Tema</button>
-  </header>
+<header class="top">
+  <button class="secondary" id="themeBtn">🌙 Tema</button>
+  <div class="header-content">
+    <h1>📝 CatatanKu</h1>
+    <p class="creator">
+      Dibuat oleh: Muhammad Al Faiz<br>
+      SMK Pasundan 4 Bandung
+    </p>
+    <p class="muted">Ruang pribadi untuk semua idemu.</p>
+  </div>
+</header>
 
   <div id="message" role="status"></div>
 
