@@ -449,6 +449,63 @@ body:not(.dark) #notes > * {
 #backBtn:hover {
   background: rgba(96, 165, 250, 0.22);
 }
+  .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.stat-card {
+  min-width: 0;
+  padding: 16px 8px;
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    rgba(59, 130, 246, 0.20),
+    rgba(30, 64, 175, 0.08)
+  );
+  border: 1px solid rgba(147, 197, 253, 0.25);
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+  display: block;
+  font-size: 25px;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.stat-number {
+  font-size: 27px;
+  font-weight: 800;
+  margin-top: 7px;
+  color: #60a5fa;
+}
+
+@media (max-width: 380px) {
+  .stats-grid {
+    gap: 6px;
+  }
+
+  .stat-card {
+    padding: 12px 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .stat-number {
+    font-size: 23px;
+  }
+}
 
 </style>
 </head>
@@ -534,6 +591,23 @@ body:not(.dark) #notes > * {
 
     <section class="card" id="notesPage">
       <h2>📚 Semua catatan</h2>
+      <div class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-icon">📝</span>
+    <div class="stat-label">Total catatan</div>
+    <div class="stat-number" id="totalNotes">0</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">⭐</span>
+    <div class="stat-label">Catatan favorit</div>
+    <div class="stat-number" id="totalFavorites">0</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">✅</span>
+    <div class="stat-label">Tugas selesai</div>
+    <div class="stat-number" id="totalTasksDone">0</div>
+  </div>
+      </div>
       <div class="stack">
         <input id="search" placeholder="Cari judul atau isi catatan...">
         <select id="filterCategory">
@@ -692,6 +766,18 @@ $("backBtn").onclick = () => {
       (!fav || n.is_favorite)
     );
     $("count").textContent = `${shown.length} catatan`;
+    $("totalNotes").textContent = notes.length;
+
+$("totalFavorites").textContent =
+  notes.filter(n => n.is_favorite).length;
+
+$("totalTasksDone").textContent =
+  notes.reduce((total, n) => {
+    if (!n.is_checklist || !Array.isArray(n.checklist_items)) {
+      return total;
+    }
+    return total + n.checklist_items.filter(item => item.done).length;
+  }, 0);
     $("notes").replaceChildren();
     if (!shown.length) {
       $("notes").textContent = "Belum ada catatan yang cocok.";
