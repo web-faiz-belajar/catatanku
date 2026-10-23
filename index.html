@@ -575,7 +575,49 @@ body:not(.dark) #notes > * {
 .note .muted {
   line-height: 1.5;
 }
+.task-checkbox {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+  flex-shrink: 0;
+}
 
+.note {
+  position: relative;
+}
+
+.note > .task-checkbox {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+  .task-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.task-line span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.task-line .task-checkbox {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: #3b82f6;
+}
 </style>
 </head>
 <body>
@@ -867,15 +909,26 @@ meta.textContent = new Date(
 ).toLocaleString("id-ID");
 box.append(title, categoryTag, meta);
       if (n.is_checklist && Array.isArray(n.checklist_items)) {
-        for (const item of n.checklist_items) {
-          const line = document.createElement("label");
-          line.className = "row";
-          const cb = document.createElement("input");
-          cb.type = "checkbox"; cb.checked = !!item.done; cb.style.width = "auto";
-          cb.onchange = () => updateChecklist(n,item.text,cb.checked);
-          const span = document.createElement("span"); span.textContent = item.text;
-          line.append(cb,span); box.append(line);
-        }
+  for (const item of n.checklist_items) {
+    const line = document.createElement("label");
+    line.className = "row task-line";
+
+    const span = document.createElement("span");
+    span.textContent = item.text;
+
+    const cb = document.createElement("input");
+    cb.className = "task-checkbox";
+    cb.type = "checkbox";
+    cb.checked = !!item.done;
+    cb.style.width = "28px";
+    cb.style.height = "28px";
+
+    cb.onchange = () => updateChecklist(n, item.text, cb.checked);
+
+    line.append(span, cb);
+    box.append(line);
+  }
+}
       } else {
         const body = document.createElement("pre");
         body.textContent = n.content || "";
