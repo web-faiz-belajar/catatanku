@@ -309,6 +309,75 @@ body:not(.dark) #notes > * {
     gap: 12px;
   }
 }
+
+  
+/* Dashboard modern */
+.dashboard-summary {
+  display: grid;
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.welcome {
+  padding: 8px 2px;
+}
+
+.welcome h2 {
+  margin: 8px 0;
+  font-size: clamp(24px, 5vw, 34px);
+  letter-spacing: -0.7px;
+}
+
+.eyebrow {
+  color: #65bdff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(150, 205, 255, 0.09);
+  border: 1px solid rgba(170, 220, 255, 0.22);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.summary-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  background: rgba(45, 150, 255, 0.2);
+  font-size: 23px;
+}
+
+.summary-card > div {
+  flex: 1;
+  min-width: 120px;
+}
+
+.summary-card p {
+  margin: 5px 0 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .dashboard-summary {
+    margin: 16px 0;
+  }
+
+  .summary-card {
+    padding: 14px;
+  }
+}
   
 </style>
 </head>
@@ -343,9 +412,24 @@ body:not(.dark) #notes > * {
     </p>
   </section>
 
-  <main id="app">
-    <section class="card">
-      <div class="top">
+
+<main id="app">
+    <section class="dashboard-summary">
+      <div class="welcome">
+        <span class="eyebrow">RUANG KERJAMU</span>
+        <h2>Halo, selamat datang 👋</h2>
+        <p class="muted">Semua ide dan catatanmu, dalam satu tempat.</p>
+      </div>
+      <div class="summary-card">
+        <span class="summary-icon">📝</span>
+        <div>
+          <strong>Catatan pribadimu</strong>
+          <p id="userEmail" class="muted"></p>
+        </div>
+        <button type="button" class="danger" id="logoutBtn">Logout</button>
+      </div>
+    </section>
+
         <div>
           <h2>Catatan pribadimu</h2>
           <p id="userEmail" class="muted"></p>
