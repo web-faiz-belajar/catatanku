@@ -179,6 +179,36 @@ body:not(.dark) .note-card {
   border-color: rgba(80, 140, 210, 0.22);
 }
 
+  
+/* Pastikan tema gelap benar-benar terlihat */
+body.dark {
+  background: linear-gradient(135deg, #071525, #0b2542 55%, #101b35) !important;
+  color: #eaf5ff !important;
+}
+
+body.dark .top,
+body.dark .card,
+body.dark .note,
+body.dark .panel,
+body.dark .auth-box,
+body.dark .note-card {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #eaf5ff !important;
+  border-color: rgba(180, 220, 255, 0.22) !important;
+}
+
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark p,
+body.dark label {
+  color: #eaf5ff;
+}
+
+body.dark .muted {
+  color: #b6cce3 !important;
+}
+
 </style>
 </head>
 <body>
