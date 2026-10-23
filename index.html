@@ -908,7 +908,8 @@ meta.textContent = new Date(
   n.updated_at || n.created_at
 ).toLocaleString("id-ID");
 box.append(title, categoryTag, meta);
-      if (n.is_checklist && Array.isArray(n.checklist_items)) {
+
+if (n.is_checklist && Array.isArray(n.checklist_items)) {
   for (const item of n.checklist_items) {
     const line = document.createElement("label");
     line.className = "row task-line";
@@ -928,8 +929,7 @@ box.append(title, categoryTag, meta);
     line.append(span, cb);
     box.append(line);
   }
-}
-      } else {
+} else {
         const body = document.createElement("pre");
         body.textContent = n.content || "";
         box.append(body);
