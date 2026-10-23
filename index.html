@@ -209,6 +209,107 @@ body.dark .muted {
   color: #b6cce3 !important;
 }
 
+  
+/* === CatatanKu Glassmorphism Blue === */
+
+body {
+  background-image:
+    radial-gradient(ellipse at 15% 10%, rgba(0, 153, 255, .24), transparent 38%),
+    radial-gradient(ellipse at 90% 70%, rgba(93, 86, 255, .18), transparent 40%),
+    linear-gradient(135deg, #071525, #0b2542 55%, #101b35);
+  background-attachment: fixed;
+}
+
+.top,
+section.card,
+.auth-box,
+.panel {
+  background: rgba(255, 255, 255, .075);
+  border: 1px solid rgba(190, 225, 255, .20);
+  border-radius: 22px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, .20),
+    inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+section.card {
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+#notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+#notes > * {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(135, 190, 255, .09);
+  border: 1px solid rgba(160, 215, 255, .20);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .12);
+  transition: transform .2s ease, background .2s ease;
+  overflow-wrap: anywhere;
+}
+
+#notes > *:hover {
+  transform: translateY(-3px);
+  background: rgba(135, 190, 255, .15);
+}
+
+#search,
+#filterCategory {
+  border-radius: 14px;
+}
+
+button {
+  box-shadow: 0 5px 16px rgba(0, 115, 255, .15);
+}
+
+body.dark {
+  background-image:
+    radial-gradient(ellipse at 15% 10%, rgba(0, 153, 255, .24), transparent 38%),
+    radial-gradient(ellipse at 90% 70%, rgba(93, 86, 255, .18), transparent 40%),
+    linear-gradient(135deg, #071525, #0b2542 55%, #101b35) !important;
+}
+
+body:not(.dark) {
+  background-image:
+    radial-gradient(ellipse at 15% 10%, rgba(0, 153, 255, .13), transparent 38%),
+    linear-gradient(135deg, #dceeff, #f4f8ff 55%, #d8e9ff);
+  background-attachment: fixed;
+}
+
+body:not(.dark) .top,
+body:not(.dark) section.card {
+  background: rgba(255, 255, 255, .60);
+  border-color: rgba(80, 140, 210, .24);
+  box-shadow: 0 12px 35px rgba(30, 80, 140, .10);
+}
+
+body:not(.dark) #notes > * {
+  background: rgba(255, 255, 255, .55);
+  border-color: rgba(80, 140, 210, .22);
+  box-shadow: 0 8px 22px rgba(30, 80, 140, .08);
+}
+
+@media (max-width: 480px) {
+  section.card {
+    padding: 15px;
+    border-radius: 18px;
+  }
+
+  #notes {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+  
 </style>
 </head>
 <body>
