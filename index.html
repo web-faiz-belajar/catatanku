@@ -23,8 +23,51 @@ h1,h2,h3,p{margin-top:0}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .row>*{flex:1}
 #app{display:none}
-.note{border:1px solid var(--border);border-radius:14px;padding:15px;margin-top:12px;overflow-wrap:anywhere}
-.note h3{margin-bottom:8px}
+.note {
+  position: relative;
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  border-radius: 20px;
+  padding: 18px;
+  margin-top: 14px;
+  overflow-wrap: anywhere;
+  background: linear-gradient(
+    145deg,
+    rgba(59, 130, 246, 0.10),
+    rgba(15, 23, 42, 0.12)
+  );
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.note:active {
+  transform: scale(0.985);
+  border-color: rgba(96, 165, 250, 0.55);
+}
+.note h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.45;
+  letter-spacing: 0.2px;
+  overflow-wrap: anywhere;
+}
+  .note .row {
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.note .row button {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.note .row button:active {
+  transform: scale(0.96);
+}
 .note pre{white-space:pre-wrap;font:inherit}
 .small{font-size:13px}
 .secondary{background:var(--border);color:var(--text)}
@@ -506,6 +549,32 @@ body:not(.dark) #notes > * {
     font-size: 23px;
   }
 }
+  .category-tag {
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 11px;
+  margin: 0 0 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  color: #60a5fa;
+  font-size: 12px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+  .note pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+  font-size: 14px;
+  margin: 12px 0;
+  color: var(--text);
+}
+
+.note .muted {
+  line-height: 1.5;
+}
 
 </style>
 </head>
@@ -787,11 +856,16 @@ $("totalTasksDone").textContent =
       const box = document.createElement("article");
       box.className = "note";
       const title = document.createElement("h3");
-      title.textContent = (n.is_favorite ? "⭐ " : "") + n.title;
-      const meta = document.createElement("p");
-      meta.className = "muted small";
-      meta.textContent = n.category + " • " + new Date(n.updated_at || n.created_at).toLocaleString("id-ID");
-      box.append(title,meta);
+title.textContent = (n.is_favorite ? "⭐ " : "") + n.title;
+const categoryTag = document.createElement("span");
+categoryTag.className = "category-tag";
+categoryTag.textContent = n.category || "Umum";
+const meta = document.createElement("p");
+meta.className = "muted small";
+meta.textContent = new Date(
+  n.updated_at || n.created_at
+).toLocaleString("id-ID");
+box.append(title, categoryTag, meta);
       if (n.is_checklist && Array.isArray(n.checklist_items)) {
         for (const item of n.checklist_items) {
           const line = document.createElement("label");
