@@ -477,8 +477,9 @@ body:not(.dark) #notes > * {
       </div>
     </section>
 
-    <section class="card">
+    <section class="card hidden" id="editorPage">
       <h2 id="formTitle">✍️ Buat catatan</h2>
+        <button type="button" id="backBtn" class="secondary">← Kembali ke daftar</button>
       <form id="noteForm" class="stack">
         <input id="noteTitle" placeholder="Judul catatan" maxlength="150" required>
         <select id="category">
@@ -503,7 +504,7 @@ body:not(.dark) #notes > * {
       <p class="muted small">Catatan tersimpan saat kamu menekan tombol simpan.</p>
     </section>
 
-    <section class="card">
+    <section class="card" id="notesPage">
       <h2>📚 Semua catatan</h2>
       <div class="stack">
         <input id="search" placeholder="Cari judul atau isi catatan...">
@@ -514,9 +515,10 @@ body:not(.dark) #notes > * {
         </select>
         <label class="row"><input id="onlyFavorites" type="checkbox" style="width:auto"> Tampilkan favorit saja</label>
       </div>
+      <button type="button" id="newNoteBtn">+ Buat catatan</button>
       <p id="count" class="muted"></p>
       <div id="notes"></div>
-    </section>
+    <section>
   </main>
 </div>
 
@@ -593,7 +595,28 @@ body:not(.dark) #notes > * {
     $("cancelEdit").classList.add("hidden");
     $("checklistArea").classList.add("hidden");
   }
-  $("cancelEdit").onclick = resetForm;
+  function showNotesPage() {
+  $("editorPage").classList.add("hidden");
+  $("notesPage").classList.remove("hidden");
+}
+
+function openEditor() {
+  resetForm();
+  $("notesPage").classList.add("hidden");
+  $("editorPage").classList.remove("hidden");
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+$("newNoteBtn").onclick = openEditor;
+
+$("backBtn").onclick = () => {
+  resetForm();
+  showNotesPage();
+};
+  $("cancelEdit").onclick = () => {
+  resetForm();
+  showNotesPage();
+};
 
   $("noteForm").onsubmit = async e => {
     e.preventDefault();
@@ -625,6 +648,7 @@ body:not(.dark) #notes > * {
       if (result.error) throw result.error;
       message("Catatan berhasil disimpan.");
       resetForm();
+      showNotesPage();
       await loadNotes();
     } catch(err) { message("Gagal menyimpan: " + err.message); }
     finally { $("saveBtn").disabled = false; }
@@ -703,6 +727,8 @@ body:not(.dark) #notes > * {
     $("formTitle").textContent = "✏️ Edit catatan";
     $("saveBtn").textContent = "Simpan perubahan";
     $("cancelEdit").classList.remove("hidden");
+    $("editorPage").classList.remove("hidden");
+    $("notesPage").classList.add("hidden");
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
