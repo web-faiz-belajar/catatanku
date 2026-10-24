@@ -1778,8 +1778,11 @@ if (n.image_url) {
     $("saveBtn").textContent = "Simpan perubahan";
     $("cancelEdit").classList.remove("hidden");
 
-    $("editorPage").classList.remove("hidden");
-    $("notesPage").classList.add("hidden");
+$("editorPage").classList.remove("hidden");
+$("notesPage").classList.add("hidden");
+
+document.body.classList.add("edit-mode");
+document.body.classList.remove("read-mode");
 
     window.scrollTo({
       top: 0,
