@@ -1507,6 +1507,11 @@ function message(text, duration = 3000) {
       // Tombol tindakan
       const actions = document.createElement("div");
       actions.className = "row";
+      
+const read = document.createElement("button");
+read.textContent = "Baca";
+read.className = "secondary";
+read.onclick = () => openReadView(n);
 
       const edit = document.createElement("button");
       edit.textContent = "Edit";
