@@ -610,6 +610,7 @@ body:not(.dark) #notes > * {
   line-height: 1.5;
 }
 
+
 .task-line .task-checkbox {
   width: 28px !important;
   height: 28px !important;
@@ -618,6 +619,57 @@ body:not(.dark) #notes > * {
   flex-shrink: 0;
   accent-color: #3b82f6;
 }
+
+/* Kartu catatan lebih modern */
+.note {
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.note:active {
+  transform: scale(0.985);
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Judul catatan */
+.note h3 {
+  font-size: 19px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+/* Tombol di dalam kartu */
+.note .row button {
+  min-height: 42px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Tombol hapus */
+.note .row button.danger {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+/* Kategori catatan */
+.category-tag {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* Animasi halus */
+button {
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+</style>
+
 </style>
 </head>
 <body>
