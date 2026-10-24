@@ -1452,9 +1452,11 @@ function openReadView(n) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-$("backToNotes").addEventListener("click", () => {
-  $("readView").classList.add("hidden");
-  $("notesPage").classList.remove("hidden");
+document.addEventListener("DOMContentLoaded", () => {
+  $("backToNotes").addEventListener("click", () => {
+    $("readView").classList.add("hidden");
+    $("notesPage").classList.remove("hidden");
+  });
 });
 
   function renderNotes() {
