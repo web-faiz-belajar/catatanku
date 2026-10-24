@@ -1351,8 +1351,12 @@ function message(text, duration = 3000) {
 
       await loadNotes();
     } catch (err) {
-      message("Gagal menyimpan: " + err.message);
-    } finally {
+  console.error("Detail gagal menyimpan:", err);
+  message(
+    "Gagal menyimpan: " +
+    (err?.message || err?.error_description || JSON.stringify(err) || String(err))
+  );
+} finally {
       $("saveBtn").disabled = false;
     }
   };
