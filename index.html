@@ -1722,6 +1722,48 @@ showApp(data.session?.user || null);
         .catch((error) => console.error("Service worker gagal:", error));
     });
   }
+  
+function openReadView(n) {
+  $("readTitle").textContent = n.title || "Tanpa judul";
+  $("readCategory").textContent = "Kategori: " + (n.category || "Umum");
+  $("readDate").textContent = new Date(
+    n.updated_at || n.created_at
+  ).toLocaleString("id-ID");
+
+  const content = $("readContent");
+  content.replaceChildren();
+
+  if (n.is_checklist && Array.isArray(n.checklist_items)) {
+    for (const item of n.checklist_items) {
+      const line = document.createElement("p");
+      line.textContent = (item.done ? "☑ " : "☐ ") + item.text;
+      content.append(line);
+    }
+  } else {
+    const text = document.createElement("p");
+    text.style.whiteSpace = "pre-wrap";
+    text.textContent = n.content || "";
+    content.append(text);
+  }
+
+  const img = $("readImage");
+  if (n.image_url) {
+    img.src = n.image_url;
+    img.classList.remove("hidden");
+  } else {
+    img.src = "";
+    img.classList.add("hidden");
+  }
+
+  $("notes").classList.add("hidden");
+  $("readView").classList.remove("hidden");
+}
+
+$("backToNotes").addEventListener("click", () => {
+  $("readView").classList.add("hidden");
+  $("notes").classList.remove("hidden");
+});
+
 </script>
 
 <script>
@@ -1751,5 +1793,19 @@ closeFullImage.addEventListener("click", () => {
 });
 </script>
 
+<div id="readView" class="hidden">
+  <button type="button" id="backToNotes">← Kembali</button>
+  <h2 id="readTitle"></h2>
+  <p id="readCategory" class="muted"></p>
+  <p id="readDate" class="muted small"></p>
+  <div id="readContent"></div>
+  <img
+    id="readImage"
+    class="hidden"
+    alt="Gambar catatan"
+    style="max-width:100%; max-height:70vh; object-fit:contain; border-radius:12px;"
+  >
+</div>
+  
 </body>
 </html>
