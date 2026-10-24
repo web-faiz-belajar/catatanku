@@ -712,6 +712,39 @@ textarea {
   font-weight: bold;
   cursor: pointer;
 }
+    #fullImageViewer {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+#fullImageViewer.hidden {
+  display: none;
+}
+
+#fullImageViewer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+#closeFullImage {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  font-size: 16px;
+}
     
   </style>
 </head>
@@ -845,7 +878,10 @@ textarea {
     Hapus gambar
   </button>
 </div>
-
+<div id="fullImageViewer" class="hidden">
+  <button type="button" id="closeFullImage">← Kembali</button>
+  <img id="fullImage" src="" alt="Gambar layar penuh">
+</div>
             <p class="muted small">
               Format JPG, PNG, WEBP, atau GIF. Maksimal 5 MB.
             </p>
@@ -1698,6 +1734,24 @@ showApp(data.session?.user || null);
   closeWelcome.addEventListener("click", () => {
     welcomePopup.style.display = "none";
   });
+  const previewImage = document.getElementById("imagePreview");
+const fullImageViewer = document.getElementById("fullImageViewer");
+const fullImage = document.getElementById("fullImage");
+const closeFullImage = document.getElementById("closeFullImage");
+
+previewImage.style.cursor = "zoom-in";
+
+previewImage.addEventListener("click", () => {
+  if (!previewImage.src) return;
+
+  fullImage.src = previewImage.src;
+  fullImageViewer.classList.remove("hidden");
+});
+
+closeFullImage.addEventListener("click", () => {
+  fullImageViewer.classList.add("hidden");
+  fullImage.src = "";
+});
 </script>
 
 </body>
