@@ -971,6 +971,7 @@ let imageUrl = editingImageUrl;
 
 if (imageFile) {
   const uploadFile = await compressImage(imageFile);
+  message("⏳ Sedang mengunggah foto...");
   const safeName = uploadFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const imagePath = `${user.id}/${Date.now()}-${safeName}`;
 
@@ -1013,7 +1014,7 @@ if (imageFile) {
         result = await db.from("notes").insert({...record,user_id:user.id});
       }
       if (result.error) throw result.error;
-      message("Catatan berhasil disimpan.");
+      message("✅ Catatan dan lampiran berhasil disimpan.");
       resetForm();
       showNotesPage();
       await loadNotes();
