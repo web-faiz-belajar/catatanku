@@ -1529,7 +1529,7 @@ read.onclick = () => openReadView(n);
       del.textContent = "Hapus";
       del.onclick = () => deleteNote(n);
 
-      actions.append(edit, favorite, del);
+      actions.append(read, edit, favorite, del);
       box.append(actions);
 
       $("notes").append(box);
