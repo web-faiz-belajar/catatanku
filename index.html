@@ -1604,9 +1604,21 @@ function message(text, duration = 3000) {
       return;
     }
 
-    showApp(data.session?.user || null);
+
+showApp(data.session?.user || null);
   });
 })();
 </script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => console.log("CatatanKu siap digunakan"))
+        .catch((error) => console.error("Service worker gagal:", error));
+    });
+  }
+</script>
+
 </body>
 </html>
