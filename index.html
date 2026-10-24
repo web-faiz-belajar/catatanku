@@ -736,7 +736,16 @@ button:active {
           <option>TJKT</option>
           <option>Ide</option>
           <option>Pekerjaan</option>
-        </select>
+        </select>    
+<div class="stack">
+  <label for="noteImage">🖼️ Lampiran gambar (opsional)</label>
+  <input
+    id="noteImage"
+    type="file"
+    accept="image/jpeg,image/png,image/webp,image/gif"
+  >
+  <p class="muted small">Format JPG, PNG, WEBP, atau GIF. Maksimal 5 MB.</p>
+</div>
         <textarea id="content" placeholder="Tulis catatanmu di sini..."></textarea>
         <label class="row"><input id="favorite" type="checkbox" style="width:auto"> Jadikan favorit</label>
         <label class="row"><input id="checklistMode" type="checkbox" style="width:auto"> Ini checklist tugas</label>
