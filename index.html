@@ -870,9 +870,12 @@ textarea {
   box-shadow: 0 6px 20px rgba(30, 70, 120, 0.10);
 }
 
-#app .dashboard-summary .summary-card strong,
-#app .dashboard-summary .summary-card #userEmail {
-  color: inherit;
+/* Sembunyikan header dan kartu akun saat baca/edit */
+body.read-mode .wrap > header.top,
+body.edit-mode .wrap > header.top,
+body.read-mode #app .dashboard-summary,
+body.edit-mode #app .dashboard-summary {
+  display: none !important;
 }
     
 /* Sembunyikan header utama saat mode baca dan edit */
@@ -1778,16 +1781,14 @@ if (n.image_url) {
     $("saveBtn").textContent = "Simpan perubahan";
     $("cancelEdit").classList.remove("hidden");
 
-$("editorPage").classList.remove("hidden");
-$("notesPage").classList.add("hidden");
+    $("notesPage").classList.add("hidden");
+    $("editorPage").classList.add("hidden");
+    $("readView").classList.remove("hidden");
 
-document.body.classList.add("edit-mode");
-document.body.classList.remove("read-mode");
+document.body.classList.add("read-mode");
+document.body.classList.remove("edit-mode");
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+window.scrollTo({ top: 0, behavior: "smooth" });
   }
 $("removeImageBtn").addEventListener("click", () => {
   editingImageUrl = null;
