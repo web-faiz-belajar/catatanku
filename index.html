@@ -875,13 +875,9 @@ textarea {
   color: inherit;
 }
     
-/* Sembunyikan header utama saat membaca atau mengedit */
-body.read-mode #app .header,
-body.read-mode #app .header-content,
-body.read-mode #app .dashboard-summary,
-body.edit-mode #app .header,
-body.edit-mode #app .header-content,
-body.edit-mode #app .dashboard-summary {
+/* Sembunyikan header utama saat mode baca dan edit */
+body.read-mode .wrap > header.top,
+body.edit-mode .wrap > header.top {
   display: none !important;
 }
 
