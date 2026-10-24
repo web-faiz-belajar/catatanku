@@ -1409,6 +1409,54 @@ function message(text, duration = 3000) {
   // ==========================================
   // 11. TAMPILKAN CATATAN
   // ==========================================
+function openReadView(n) {
+  $("readTitle").textContent = n.title || "Tanpa judul";
+  $("readCategory").textContent =
+    "Kategori: " + (n.category || "Umum");
+
+  $("readDate").textContent = new Date(
+    n.updated_at || n.created_at
+  ).toLocaleString("id-ID");
+
+  const content = $("readContent");
+  content.replaceChildren();
+
+  if (n.is_checklist && Array.isArray(n.checklist_items)) {
+    for (const item of n.checklist_items) {
+      const line = document.createElement("p");
+      line.textContent =
+        (item.done ? "☑ " : "☐ ") + item.text;
+      content.append(line);
+    }
+  } else {
+    const text = document.createElement("p");
+    text.style.whiteSpace = "pre-wrap";
+    text.textContent = n.content || "";
+    content.append(text);
+  }
+
+  const img = $("readImage");
+
+  if (n.image_url) {
+    img.src = n.image_url;
+    img.classList.remove("hidden");
+  } else {
+    img.src = "";
+    img.classList.add("hidden");
+  }
+
+  $("notesPage").classList.add("hidden");
+  $("editorPage").classList.add("hidden");
+  $("readView").classList.remove("hidden");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+$("backToNotes").addEventListener("click", () => {
+  $("readView").classList.add("hidden");
+  $("notesPage").classList.remove("hidden");
+});
+
   function renderNotes() {
     const query = $("search").value.toLowerCase().trim();
     const category = $("filterCategory").value;
@@ -1728,47 +1776,6 @@ showApp(data.session?.user || null);
     });
   }
   
-function openReadView(n) {
-  $("readTitle").textContent = n.title || "Tanpa judul";
-  $("readCategory").textContent = "Kategori: " + (n.category || "Umum");
-  $("readDate").textContent = new Date(
-    n.updated_at || n.created_at
-  ).toLocaleString("id-ID");
-
-  const content = $("readContent");
-  content.replaceChildren();
-
-  if (n.is_checklist && Array.isArray(n.checklist_items)) {
-    for (const item of n.checklist_items) {
-      const line = document.createElement("p");
-      line.textContent = (item.done ? "☑ " : "☐ ") + item.text;
-      content.append(line);
-    }
-  } else {
-    const text = document.createElement("p");
-    text.style.whiteSpace = "pre-wrap";
-    text.textContent = n.content || "";
-    content.append(text);
-  }
-
-  const img = $("readImage");
-  if (n.image_url) {
-    img.src = n.image_url;
-    img.classList.remove("hidden");
-  } else {
-    img.src = "";
-    img.classList.add("hidden");
-  }
-
-  $("notes").classList.add("hidden");
-  $("readView").classList.remove("hidden");
-}
-
-$("backToNotes").addEventListener("click", () => {
-  $("readView").classList.add("hidden");
-  $("notes").classList.remove("hidden");
-});
-
 </script>
 
 <script>
