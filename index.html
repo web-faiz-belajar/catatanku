@@ -818,6 +818,7 @@ button:active {
 
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
   let user = null, notes = [], editingId = null, isSignup = false;
+  let editingImageUrl = null;
 
   $("themeBtn").onclick = () => {
     document.body.classList.toggle("dark");
@@ -863,6 +864,7 @@ button:active {
 
   function resetForm() {
     editingId = null;
+    editingImageUrl = null;
     $("noteForm").reset();
     $("formTitle").textContent = "✍️ Buat catatan";
     $("saveBtn").textContent = "Simpan catatan";
@@ -895,6 +897,28 @@ $("backBtn").onclick = () => {
   $("noteForm").onsubmit = async e => {
     e.preventDefault();
     if (!user) return;
+    
+const imageFile = $("noteImage").files[0];
+
+if (imageFile) {
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+  ];
+
+  if (!allowedTypes.includes(imageFile.type)) {
+    message("Format gambar harus JPG, PNG, WEBP, atau GIF.");
+    return;
+  }
+
+  if (imageFile.size > 5 * 1024 * 1024) {
+    message("Ukuran gambar maksimal 5 MB.");
+    return;
+  }
+}
+
     const checklist = $("checklistMode").checked;
     const checklistItems = checklist
       ? $("checkItems").value.split("\n").map(line => ({
@@ -902,9 +926,36 @@ $("backBtn").onclick = () => {
           done: /^\[x\]\s*/i.test(line)
         })).filter(item => item.text)
       : [];
+    
+let imageUrl = editingImageUrl;
+
+if (imageFile) {
+  const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const imagePath = `${user.id}/${Date.now()}-${safeName}`;
+
+  const { data: uploadData, error: uploadError } =
+    await db.storage
+      .from("catatan-gambat")
+      .upload(imagePath, imageFile, {
+        contentType: imageFile.type,
+        upsert: false
+      });
+
+  if (uploadError) {
+    message("Gagal mengunggah gambar: " + uploadError.message);
+    return;
+  }
+
+  const { data: publicData } = db.storage
+    .from("catatan-gambat")
+    .getPublicUrl(uploadData.path);
+
+  imageUrl = publicData.publicUrl;
+}
     const record = {
       title: $("noteTitle").value.trim(),
       content: $("content").value,
+      image_url: imageUrl,
       category: $("category").value,
       is_favorite: $("favorite").checked,
       is_checklist: checklist,
@@ -969,6 +1020,19 @@ meta.textContent = new Date(
   n.updated_at || n.created_at
 ).toLocaleString("id-ID");
 box.append(title, categoryTag, meta);
+      
+if (n.image_url) {
+  const image = document.createElement("img");
+  image.src = n.image_url;
+  image.alt = "Lampiran gambar: " + (n.title || "catatan");
+  image.loading = "lazy";
+  image.style.width = "100%";
+  image.style.maxHeight = "320px";
+  image.style.objectFit = "contain";
+  image.style.borderRadius = "12px";
+  image.style.margin = "10px 0";
+  box.append(image);
+}
 
 if (n.is_checklist && Array.isArray(n.checklist_items)) {
   for (const item of n.checklist_items) {
@@ -1019,6 +1083,7 @@ if (n.is_checklist && Array.isArray(n.checklist_items)) {
 
   function editNote(n) {
     editingId = n.id;
+    editingImageUrl = n.image_url || null;
     $("noteTitle").value = n.title;
     $("content").value = n.content || "";
     $("category").value = n.category;
