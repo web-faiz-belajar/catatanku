@@ -833,6 +833,18 @@ textarea {
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"
             >
+            <div id="imagePreviewBox" class="hidden">
+  <p>Gambar saat ini:</p>
+  <img
+    id="imagePreview"
+    src=""
+    alt="Preview gambar catatan"
+    style="max-width:100%; max-height:250px; object-fit:contain; border-radius:12px;"
+  >
+  <button type="button" id="removeImageBtn">
+    Hapus gambar
+  </button>
+</div>
 
             <p class="muted small">
               Format JPG, PNG, WEBP, atau GIF. Maksimal 5 MB.
@@ -1510,6 +1522,16 @@ function message(text, duration = 3000) {
   function editNote(n) {
     editingId = n.id;
     editingImageUrl = n.image_url || null;
+    const previewBox = $("imagePreviewBox");
+const previewImage = $("imagePreview");
+
+if (n.image_url) {
+  previewImage.src = n.image_url;
+  previewBox.classList.remove("hidden");
+} else {
+  previewImage.src = "";
+  previewBox.classList.add("hidden");
+}
 
     $("noteTitle").value = n.title || "";
     $("content").value = n.content || "";
@@ -1538,7 +1560,13 @@ function message(text, duration = 3000) {
       behavior: "smooth"
     });
   }
+$("removeImageBtn").addEventListener("click", () => {
+  editingImageUrl = null;
 
+  $("imagePreview").src = "";
+  $("imagePreviewBox").classList.add("hidden");
+  $("noteImage").value = "";
+});
   // ==========================================
   // 14. PERBARUI CHECKLIST
   // ==========================================
