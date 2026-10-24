@@ -1004,11 +1004,11 @@ if (imageFile) {
 let imageUrl = editingImageUrl;
 
 if (imageFile) {
-  message("⏳ Sedang mengompres foto...");
+  message("⏳ Sedang mengompres foto...", 0);
 const mulaiKompres = Date.now();
 const uploadFile = await compressImage(imageFile);
 console.log("Waktu kompresi:", Date.now() - mulaiKompres, "ms");
-message("⏳ Foto siap, sedang mengunggah...");
+message("⏳ Foto siap, sedang mengunggah...", 0);
   const safeName = uploadFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const imagePath = `${user.id}/${Date.now()}-${safeName}`;
 
