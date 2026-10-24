@@ -1753,8 +1753,14 @@ $("removeImageBtn").addEventListener("click", () => {
   // ==========================================
   // 19. CEK SESI SUPABASE
   // ==========================================
-  db.auth.onAuthStateChange((_event, session) => {
-    showApp(session?.user || null);
+  db.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+      showApp(session?.user || null);
+    }
+
+    if (event === "SIGNED_OUT") {
+      showApp(null);
+    }
   });
 
   db.auth.getSession().then(({ data, error }) => {
@@ -1763,8 +1769,9 @@ $("removeImageBtn").addEventListener("click", () => {
       return;
     }
 
-
-showApp(data.session?.user || null);
+    showApp(data.session?.user || null);
+  }).catch(error => {
+    message("Gagal memuat sesi: " + error.message);
   });
 })();
 </script>
