@@ -848,6 +848,19 @@ textarea {
   color: #f8fafc;
 }
     
+/* Header akun tetap di atas saat halaman di-scroll */
+#app .user-info {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 0;
+  border-radius: 0 0 22px 22px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+    
   </style>
 </head>
 <body>
