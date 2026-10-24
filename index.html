@@ -1,1216 +1,1601 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CatatanKu</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{--bg:#f3f5fb;--card:#fff;--text:#20243a;--muted:#6c7285;--primary:#6366f1;--border:#e2e5ef}
-body.dark{--bg:#121522;--card:#1c2132;--text:#f4f5ff;--muted:#b1b7cb;--border:#343a50}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,sans-serif;transition:.2s}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:var(--primary);color:white}
-input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)}
-textarea{min-height:140px;resize:vertical}
-.wrap{max-width:1050px;margin:auto;padding:20px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px}
-h1,h2,h3,p{margin-top:0}
-.muted{color:var(--muted);font-size:14px}
-.stack{display:grid;gap:12px}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.row>*{flex:1}
-#app{display:none}
-.note {
-  position: relative;
-  border: 1px solid rgba(96, 165, 250, 0.22);
-  border-radius: 20px;
-  padding: 18px;
-  margin-top: 14px;
-  overflow-wrap: anywhere;
-  background: linear-gradient(
-    145deg,
-    rgba(59, 130, 246, 0.10),
-    rgba(15, 23, 42, 0.12)
-  );
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.note:active {
-  transform: scale(0.985);
-  border-color: rgba(96, 165, 250, 0.55);
-}
-.note h3 {
-  margin: 0 0 12px;
-  font-size: 18px;
-  font-weight: 750;
-  line-height: 1.45;
-  letter-spacing: 0.2px;
-  overflow-wrap: anywhere;
-}
-  .note .row {
-  gap: 8px;
-  margin-top: 14px;
-  flex-wrap: wrap;
-}
-
-.note .row button {
-  flex: 1;
-  min-width: 80px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-}
-
-.note .row button:active {
-  transform: scale(0.96);
-}
-.note pre{white-space:pre-wrap;font:inherit}
-.small{font-size:13px}
-.secondary{background:var(--border);color:var(--text)}
-.danger{background:#dc2626}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-#message {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  width: max-content;
-  max-width: calc(100% - 32px);
-  padding: 14px 18px;
-  border-radius: 14px;
-  background: #1e293b;
-  color: #ffffff;
-  box-shadow: 0 8px 28px rgba(0,0,0,.25);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.hidden{display:none!important}
-label{display:block;font-size:14px;margin-bottom:5px}
-  
-/* CatatanKu — Glassmorphism Biru */
-body {
-  background:
-    radial-gradient(ellipse at top left, #164e8a 0%, transparent 45%),
-    linear-gradient(135deg, #071525, #0b2542 55%, #101b35);
-  color: #eaf5ff;
-  min-height: 100vh;
-}
-
-.wrap {
-  width: min(100% - 28px, 900px);
-  margin: 0 auto;
-  padding: 24px 0 40px;
-}
-
-.top {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(180, 220, 255, 0.22);
-  border-radius: 22px;
-  padding: 20px;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-}
-
-h1 {
-  color: #f2f9ff;
-  letter-spacing: -0.5px;
-}
-
-.muted {
-  color: #b6cce3;
-}
-
-button {
-  border: 1px solid rgba(150, 210, 255, 0.25);
-  border-radius: 12px;
-  padding: 11px 16px;
-  background: linear-gradient(135deg, #1685f8, #3864df);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
-}
-
-button:active {
-  transform: scale(0.97);
-}
-
-button.secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #eaf5ff;
-  border: 1px solid rgba(180, 220, 255, 0.25);
-}
-
-input, textarea, select {
-  width: 100%;
-  box-sizing: border-box;
-  background: rgba(5, 22, 42, 0.55);
-  border: 1px solid rgba(150, 200, 255, 0.25);
-  border-radius: 12px;
-  padding: 12px 14px;
-  color: #f2f9ff;
-  outline: none;
-}
-  textarea {
-  min-height: 60vh;
-  height: 60vh;
-  resize: vertical;
-  line-height: 1.7;
-  font-size: 17px;
-  padding: 16px;
-}
-
-input:focus, textarea:focus, select:focus {
-  border-color: #48aaff;
-  box-shadow: 0 0 0 3px rgba(56, 161, 255, 0.14);
-}
-
-.card, .note, .panel, .auth-box, .note-card {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(180, 220, 255, 0.18);
-  border-radius: 18px;
-  padding: 18px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
-}
-
-#notes, .notes, .notes-grid {
-  gap: 16px;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid rgba(180, 220, 255, 0.18);
-}
-
-@media (max-width: 600px) {
-  .wrap {
-    width: calc(100% - 22px);
-    padding-top: 14px;
-  }
-
-  .top {
-    padding: 16px;
-    border-radius: 18px;
-  }
-}
-
-  
-/* Tema terang */
-body:not(.dark) {
-  background: linear-gradient(135deg, #dceeff, #f4f8ff 55%, #d8e9ff);
-  color: #173452;
-}
-
-body:not(.dark) .top {
-  background: rgba(255, 255, 255, 0.72);
-  border-color: rgba(80, 140, 210, 0.25);
-}
-
-body:not(.dark) h1 {
-  color: #173452;
-}
-
-body:not(.dark) .muted {
-  color: #526b86;
-}
-
-body:not(.dark) button.secondary {
-  color: #173452;
-  background: rgba(255, 255, 255, 0.72);
-  border-color: rgba(80, 140, 210, 0.3);
-}
-
-body:not(.dark) input,
-body:not(.dark) textarea,
-body:not(.dark) select {
-  background: rgba(255, 255, 255, 0.8);
-  color: #173452;
-  border-color: #b8d3f0;
-}
-
-body:not(.dark) .card,
-body:not(.dark) .note,
-body:not(.dark) .panel,
-body:not(.dark) .auth-box,
-body:not(.dark) .note-card {
-  background: rgba(255, 255, 255, 0.7);
-  border-color: rgba(80, 140, 210, 0.22);
-}
-
-  
-/* Pastikan tema gelap benar-benar terlihat */
-body.dark {
-  background: linear-gradient(135deg, #071525, #0b2542 55%, #101b35) !important;
-  color: #eaf5ff !important;
-}
-
-body.dark .top,
-body.dark .card,
-body.dark .note,
-body.dark .panel,
-body.dark .auth-box,
-body.dark .note-card {
-  background: rgba(255, 255, 255, 0.07) !important;
-  color: #eaf5ff !important;
-  border-color: rgba(180, 220, 255, 0.22) !important;
-}
-
-body.dark h1,
-body.dark h2,
-body.dark h3,
-body.dark p,
-body.dark label {
-  color: #eaf5ff;
-}
-
-body.dark .muted {
-  color: #b6cce3 !important;
-}
-
-  
-/* === CatatanKu Glassmorphism Blue === */
-
-body {
-  background-image:
-    radial-gradient(ellipse at 15% 10%, rgba(0, 153, 255, .24), transparent 38%),
-    radial-gradient(ellipse at 90% 70%, rgba(93, 86, 255, .18), transparent 40%),
-    linear-gradient(135deg, #071525, #0b2542 55%, #101b35);
-  background-attachment: fixed;
-}
-
-.top,
-section.card,
-.auth-box,
-.panel {
-  background: rgba(255, 255, 255, .075);
-  border: 1px solid rgba(190, 225, 255, .20);
-  border-radius: 22px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 12px 35px rgba(0, 0, 0, .20),
-    inset 0 1px 0 rgba(255, 255, 255, .08);
-}
-
-section.card {
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-#notes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-  gap: 14px;
-  margin-top: 14px;
-}
-
-#notes > * {
-  min-width: 0;
-  padding: 16px;
-  border-radius: 18px;
-  background: rgba(135, 190, 255, .09);
-  border: 1px solid rgba(160, 215, 255, .20);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, .12);
-  transition: transform .2s ease, background .2s ease;
-  overflow-wrap: anywhere;
-}
-
-#notes > *:hover {
-  transform: translateY(-3px);
-  background: rgba(135, 190, 255, .15);
-}
-
-#search,
-#filterCategory {
-  border-radius: 14px;
-}
-
-button {
-  box-shadow: 0 5px 16px rgba(0, 115, 255, .15);
-}
-
-body.dark {
-  background-image:
-    radial-gradient(ellipse at 15% 10%, rgba(0, 153, 255, .24), transparent 38%),
-    radial-gradient(ellipse at 90% 70%, rgba(93, 86, 255, .18), transparent 40%),
-    linear-gradient(135deg, #071525, #0b2542 55%, #101b35) !important;
-}
-
-body:not(.dark) {
-  background-image:
-    radial-gradient(ellipse at 15% 10%, rgba(0, 153, 255, .13), transparent 38%),
-    linear-gradient(135deg, #dceeff, #f4f8ff 55%, #d8e9ff);
-  background-attachment: fixed;
-}
-
-body:not(.dark) .top,
-body:not(.dark) section.card {
-  background: rgba(255, 255, 255, .60);
-  border-color: rgba(80, 140, 210, .24);
-  box-shadow: 0 12px 35px rgba(30, 80, 140, .10);
-}
-
-body:not(.dark) #notes > * {
-  background: rgba(255, 255, 255, .55);
-  border-color: rgba(80, 140, 210, .22);
-  box-shadow: 0 8px 22px rgba(30, 80, 140, .08);
-}
-
-@media (max-width: 480px) {
-  section.card {
-    padding: 15px;
-    border-radius: 18px;
-  }
-
-  #notes {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-}
-
-  
-/* Dashboard modern */
-.dashboard-summary {
-  display: grid;
-  gap: 18px;
-  margin: 24px 0;
-}
-
-.welcome {
-  padding: 8px 2px;
-}
-
-.welcome h2 {
-  margin: 8px 0;
-  font-size: clamp(24px, 5vw, 34px);
-  letter-spacing: -0.7px;
-}
-
-.eyebrow {
-  color: #65bdff;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 2px;
-}
-
-.summary-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  padding: 18px;
-  border-radius: 20px;
-  background: rgba(150, 205, 255, 0.09);
-  border: 1px solid rgba(170, 220, 255, 0.22);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-
-.summary-icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  border-radius: 15px;
-  background: rgba(45, 150, 255, 0.2);
-  font-size: 23px;
-}
-
-.summary-card > div {
-  flex: 1;
-  min-width: 120px;
-}
-
-.summary-card p {
-  margin: 5px 0 0;
-  overflow-wrap: anywhere;
-}
-
-@media (max-width: 480px) {
-  .dashboard-summary {
-    margin: 16px 0;
-  }
-
-  .summary-card {
-    padding: 14px;
-  }
-}
-
-.creator {
-  text-align: center;
-  font-size: 14px;
-  color: #94a3b8;
-  margin-top: 8px;
-  line-height: 1.6;
-}
-
-
-.top {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 180px;
-  padding: 60px 12px 24px;
-}
-
-.header-content {
-  width: 100%;
-  text-align: center;
-}
-
-.header-content h1 {
-  margin-bottom: 16px;
-}
-
-.header-content .creator {
-  margin-bottom: 12px;
-}
-
-.header-content .muted {
-  margin-bottom: 0;
-}
-
-#themeBtn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: auto;
-  z-index: 2;
-}
-  #backBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 18px;
-  margin-bottom: 8px;
-  border-radius: 14px;
-  background: rgba(96, 165, 250, 0.12);
-  border: 1px solid rgba(147, 197, 253, 0.35);
-  color: #93c5fd;
-  font-size: 15px;
-  font-weight: 600;
-  box-shadow: none;
-  transition: background 0.2s ease;
-}
-
-#backBtn:hover {
-  background: rgba(96, 165, 250, 0.22);
-}
-  .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 18px 0;
-}
-
-.stat-card {
-  min-width: 0;
-  padding: 16px 8px;
-  border-radius: 16px;
-  background: linear-gradient(
-    145deg,
-    rgba(59, 130, 246, 0.20),
-    rgba(30, 64, 175, 0.08)
-  );
-  border: 1px solid rgba(147, 197, 253, 0.25);
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-.stat-icon {
-  display: block;
-  font-size: 25px;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-size: 12px;
-  line-height: 1.4;
-  opacity: 0.85;
-}
-
-.stat-number {
-  font-size: 27px;
-  font-weight: 800;
-  margin-top: 7px;
-  color: #60a5fa;
-}
-
-@media (max-width: 380px) {
-  .stats-grid {
-    gap: 6px;
-  }
-
-  .stat-card {
-    padding: 12px 4px;
-  }
-
-  .stat-label {
-    font-size: 11px;
-  }
-
-  .stat-number {
-    font-size: 23px;
-  }
-}
-  .category-tag {
-  display: inline-block;
-  width: fit-content;
-  max-width: 100%;
-  padding: 5px 11px;
-  margin: 0 0 10px;
-  border-radius: 999px;
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(96, 165, 250, 0.3);
-  color: #60a5fa;
-  font-size: 12px;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-  .note pre {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  line-height: 1.7;
-  font-size: 14px;
-  margin: 12px 0;
-  color: var(--text);
-}
-
-.note .muted {
-  line-height: 1.5;
-}
-.task-checkbox {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px;
-  accent-color: #3b82f6;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.note {
-  position: relative;
-}
-
-.note > .task-checkbox {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-  .task-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.task-line span {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  line-height: 1.5;
-}
-
-
-.task-line .task-checkbox {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px;
-  margin: 0;
-  flex-shrink: 0;
-  accent-color: #3b82f6;
-}
-
-/* Kartu catatan lebih modern */
-.note {
-  border-radius: 22px;
-  padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.note:active {
-  transform: scale(0.985);
-  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.12);
-}
-
-/* Judul catatan */
-.note h3 {
-  font-size: 19px;
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-/* Tombol di dalam kartu */
-.note .row button {
-  min-height: 42px;
-  border-radius: 12px;
-  font-weight: 600;
-}
-
-/* Tombol hapus */
-.note .row button.danger {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-}
-
-/* Kategori catatan */
-.category-tag {
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-
-/* Animasi halus */
-button {
-  transition: transform 0.18s ease, opacity 0.18s ease;
-}
-
-button:active {
-  transform: scale(0.97);
-}
-</style>
-
-</style>
+  <!-- 1. Pengaturan dokumen -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CatatanKu</title>
+
+  <!-- 2. Pustaka Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 3. CSS utama -->
+  <style>
+    :root {
+      --bg: #f3f5fb;
+      --card: #fff;
+      --text: #20243a;
+      --muted: #6c7285;
+      --primary: #6366f1;
+      --border: #e2e5ef;
+    }
+
+    body.dark {
+      --bg: #121522;
+      --card: #1c2132;
+      --text: #f4f5ff;
+      --muted: #b1b7cb;
+      --border: #343a50;
+    }
+
+    /* Gaya dasar */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #eaf5ff;
+      font: 16px system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(0,153,255,.24), transparent 38%),
+        radial-gradient(ellipse at 90% 70%, rgba(93,86,255,.18), transparent 40%),
+        linear-gradient(135deg, #071525, #0b2542 55%, #101b35);
+      background-attachment: fixed;
+      transition: background .2s, color .2s;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 1px solid rgba(150,210,255,.25);
+      border-radius: 12px;
+      padding: 11px 16px;
+      background: linear-gradient(135deg, #1685f8, #3864df);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 5px 16px rgba(0,115,255,.15);
+      transition: transform .18s ease, opacity .18s ease;
+    }
+
+    button:active {
+      transform: scale(.97);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    button.secondary {
+      color: #eaf5ff;
+      background: rgba(255,255,255,.08);
+      border-color: rgba(180,220,255,.25);
+      box-shadow: none;
+    }
+
+    button.danger {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      color: #f2f9ff;
+      background: rgba(5,22,42,.55);
+      border: 1px solid rgba(150,200,255,.25);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #48aaff;
+      box-shadow: 0 0 0 3px rgba(56,161,255,.14);
+    }
+
+    textarea {
+      min-height: 60vh;
+      height: 60vh;
+      padding: 16px;
+      resize: vertical;
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .wrap {
+      width: min(100% - 28px, 900px);
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    .muted {
+      color: #b6cce3;
+      font-size: 14px;
+    }
+
+    .small {
+      font-size: 13px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .row > * {
+      flex: 1;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #app {
+      display: none;
+    }
+
+    /* Header dan tombol tema */
+    .top {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+      padding: 60px 12px 24px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(190,225,255,.20);
+      border-radius: 22px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow:
+        0 12px 35px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .header-content {
+      width: 100%;
+      text-align: center;
+    }
+
+    .header-content h1 {
+      margin-bottom: 16px;
+      color: #f2f9ff;
+      letter-spacing: -.5px;
+    }
+
+    .header-content .creator {
+      margin-bottom: 12px;
+    }
+
+    .header-content .muted {
+      margin-bottom: 0;
+    }
+
+    .creator {
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    #themeBtn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      width: auto;
+    }
+
+    /* Panel dan kartu */
+    .card,
+    .note,
+    .panel,
+    .auth-box,
+    .note-card,
+    section.card {
+      padding: 20px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(190,225,255,.20);
+      border-radius: 22px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow:
+        0 12px 35px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .card {
+      margin-bottom: 20px;
+    }
+
+    #auth {
+      margin-top: 16px;
+    }
+
+    /* Notifikasi */
+    #message {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      z-index: 9999;
+      display: none;
+      width: max-content;
+      max-width: calc(100% - 32px);
+      padding: 14px 18px;
+      color: #fff;
+      background: #1e293b;
+      border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.25);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+      line-height: 1.5;
+      transform: translateX(-50%);
+    }
+
+    /* Dashboard dan statistik */
+    .dashboard-summary {
+      display: grid;
+      gap: 18px;
+      margin: 24px 0;
+    }
+
+    .welcome {
+      padding: 8px 2px;
+    }
+
+    .welcome h2 {
+      margin: 8px 0;
+      font-size: clamp(24px, 5vw, 34px);
+      letter-spacing: -.7px;
+    }
+
+    .eyebrow {
+      color: #65bdff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .summary-card {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 18px;
+      background: rgba(150,205,255,.09);
+      border: 1px solid rgba(170,220,255,.22);
+      border-radius: 20px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .summary-icon {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      background: rgba(45,150,255,.2);
+      border-radius: 15px;
+      font-size: 23px;
+    }
+
+    .summary-card > div {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .summary-card p {
+      margin: 5px 0 0;
+      overflow-wrap: anywhere;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .stat-card {
+      min-width: 0;
+      padding: 16px 8px;
+      background: linear-gradient(
+        145deg,
+        rgba(59,130,246,.20),
+        rgba(30,64,175,.08)
+      );
+      border: 1px solid rgba(147,197,253,.25);
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    }
+
+    .stat-icon {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 25px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      line-height: 1.4;
+      opacity: .85;
+    }
+
+    .stat-number {
+      margin-top: 7px;
+      color: #60a5fa;
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    /* Kartu catatan */
+    #notes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .note {
+      position: relative;
+      min-width: 0;
+      margin-top: 14px;
+      padding: 20px;
+      overflow-wrap: anywhere;
+      background: rgba(135,190,255,.09);
+      border: 1px solid rgba(160,215,255,.20);
+      border-radius: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    #notes > *:hover {
+      transform: translateY(-3px);
+      background: rgba(135,190,255,.15);
+    }
+
+    .note:active {
+      transform: scale(.985);
+      box-shadow: 0 5px 16px rgba(0,0,0,.12);
+    }
+
+    .note h3 {
+      margin: 0 0 12px;
+      font-size: 19px;
+      font-weight: 750;
+      line-height: 1.5;
+      letter-spacing: .2px;
+      overflow-wrap: anywhere;
+    }
+
+    .note pre {
+      margin: 12px 0;
+      color: var(--text);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font: inherit;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .note .muted {
+      line-height: 1.5;
+    }
+
+    .note .row {
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .note .row button {
+      flex: 1;
+      min-width: 80px;
+      min-height: 42px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .note .row button:active {
+      transform: scale(.96);
+    }
+
+    .category-tag {
+      display: inline-block;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 0 10px;
+      padding: 6px 12px;
+      color: #60a5fa;
+      background: rgba(59,130,246,.15);
+      border: 1px solid rgba(96,165,250,.3);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      overflow-wrap: anywhere;
+    }
+
+    /* Checklist */
+    .task-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .task-line span {
+      flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+
+    .task-checkbox {
+      width: 28px !important;
+      height: 28px !important;
+      min-width: 28px;
+      margin: 0;
+      accent-color: #3b82f6;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .note > .task-checkbox {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    /* Navigasi dan pencarian */
+    #backBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      margin-bottom: 8px;
+      color: #93c5fd;
+      background: rgba(96,165,250,.12);
+      border: 1px solid rgba(147,197,253,.35);
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: none;
+      transition: background .2s ease;
+    }
+
+    #backBtn:hover {
+      background: rgba(96,165,250,.22);
+    }
+
+    #search,
+    #filterCategory {
+      border-radius: 14px;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid rgba(180,220,255,.18);
+    }
+
+    /* Tema terang */
+    body:not(.dark) {
+      color: #173452;
+      background-image:
+        radial-gradient(ellipse at 15% 10%, rgba(0,153,255,.13), transparent 38%),
+        linear-gradient(135deg, #dceeff, #f4f8ff 55%, #d8e9ff);
+      background-attachment: fixed;
+    }
+
+    body:not(.dark) .top,
+    body:not(.dark) section.card {
+      background: rgba(255,255,255,.60);
+      border-color: rgba(80,140,210,.24);
+      box-shadow: 0 12px 35px rgba(30,80,140,.10);
+    }
+
+    body:not(.dark) h1 {
+      color: #173452;
+    }
+
+    body:not(.dark) .muted {
+      color: #526b86;
+    }
+
+    body:not(.dark) button.secondary {
+      color: #173452;
+      background: rgba(255,255,255,.72);
+      border-color: rgba(80,140,210,.3);
+    }
+
+    body:not(.dark) input,
+    body:not(.dark) textarea,
+    body:not(.dark) select {
+      color: #173452;
+      background: rgba(255,255,255,.8);
+      border-color: #b8d3f0;
+    }
+
+    body:not(.dark) .card,
+    body:not(.dark) .note,
+    body:not(.dark) .panel,
+    body:not(.dark) .auth-box,
+    body:not(.dark) .note-card {
+      background: rgba(255,255,255,.7);
+      border-color: rgba(80,140,210,.22);
+    }
+
+    body:not(.dark) #notes > * {
+      background: rgba(255,255,255,.55);
+      border-color: rgba(80,140,210,.22);
+      box-shadow: 0 8px 22px rgba(30,80,140,.08);
+    }
+
+    /* Tema gelap */
+    body.dark {
+      color: #eaf5ff !important;
+      background-image:
+        radial-gradient(ellipse at 15% 10%, rgba(0,153,255,.24), transparent 38%),
+        radial-gradient(ellipse at 90% 70%, rgba(93,86,255,.18), transparent 40%),
+        linear-gradient(135deg, #071525, #0b2542 55%, #101b35) !important;
+      background-attachment: fixed;
+    }
+
+    body.dark .top,
+    body.dark .card,
+    body.dark .note,
+    body.dark .panel,
+    body.dark .auth-box,
+    body.dark .note-card {
+      color: #eaf5ff !important;
+      background: rgba(255,255,255,.07) !important;
+      border-color: rgba(180,220,255,.22) !important;
+    }
+
+    body.dark h1,
+    body.dark h2,
+    body.dark h3,
+    body.dark p,
+    body.dark label {
+      color: #eaf5ff;
+    }
+
+    body.dark .muted {
+      color: #b6cce3 !important;
+    }
+
+    /* Tampilan responsif */
+    @media (max-width: 600px) {
+      .wrap {
+        width: calc(100% - 22px);
+        padding-top: 14px;
+      }
+
+      .top {
+        padding: 60px 16px 24px;
+        border-radius: 18px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      section.card {
+        padding: 15px;
+        border-radius: 18px;
+      }
+
+      #notes {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .dashboard-summary {
+        margin: 16px 0;
+      }
+
+      .summary-card {
+        padding: 14px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .stats-grid {
+        gap: 6px;
+      }
+
+      .stat-card {
+        padding: 12px 4px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+      }
+
+      .stat-number {
+        font-size: 23px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-<header class="top">
-  <button class="secondary" id="themeBtn">🌙 Tema</button>
-  <div class="header-content">
-    <h1>catatanku</h1>
-    <p class="creator">
-      Dibuat oleh: Muhammad Al Faiz<br>
-      SMK Pasundan 4 Bandung
-    </p>
-    <p class="muted">Ruang pribadi untuk semua idemu.</p>
-  </div>
-</header>
+  <!-- =====================================================
+       12. PEMBUNGKUS DAN HEADER
+       ===================================================== -->
+  <div class="wrap">
+    <header class="top">
+      <button class="secondary" id="themeBtn">🌙 Tema</button>
 
-  <div id="message" role="status"></div>
-
-  <section id="auth" class="card">
-    <h2 id="authTitle">Masuk ke CatatanKu</h2>
-    <p class="muted">Catatanmu tersimpan online di akunmu.</p>
-    <form id="authForm" class="stack">
-      <div>
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="email" required>
+      <div class="header-content">
+        <h1>catatanku</h1>
+        <p class="creator">
+          Dibuat oleh: Muhammad Al Faiz<br>
+          SMK Pasundan 4 Bandung
+        </p>
+        <p class="muted">Ruang pribadi untuk semua idemu.</p>
       </div>
-      <div>
-        <label for="password">Kata sandi</label>
-        <input id="password" type="password" minlength="6" autocomplete="current-password" required>
-      </div>
-      <button type="submit" id="authSubmit">Login</button>
-    </form>
-    <p style="margin-top:14px">
-      <button class="secondary" id="switchAuth">Belum punya akun? Daftar</button>
-    </p>
-  </section>
+    </header>
 
+    <!-- Notifikasi aplikasi -->
+    <div id="message" role="status"></div>
 
-<main id="app">
-    <section class="dashboard-summary">
-      <div class="welcome">
-        <span class="eyebrow">RUANG KERJAMU</span>
-        <h2>Halo, selamat datang 👋</h2>
-        <p class="muted">Semua ide dan catatanmu, dalam satu tempat.</p>
-      </div>
-      <div class="summary-card">
-        <span class="summary-icon">📝</span>
+    <!-- ===================================================
+         13. LOGIN DAN PENDAFTARAN
+         =================================================== -->
+    <section id="auth" class="card">
+      <h2 id="authTitle">Masuk ke CatatanKu</h2>
+      <p class="muted">Catatanmu tersimpan online di akunmu.</p>
+
+      <form id="authForm" class="stack">
         <div>
-          <strong>Catatan pribadimu</strong>
-          <p id="userEmail" class="muted"></p>
+          <label for="email">Email</label>
+          <input id="email" type="email" autocomplete="email" required>
         </div>
-        <button type="button" class="danger" id="logoutBtn">Logout</button>
-      </div>
-    </section>
 
-    <section class="card hidden" id="editorPage">
-      <h2 id="formTitle">✍️ Buat catatan</h2>
-        <button type="button" id="backBtn" class="secondary">← Kembali ke daftar</button>
-      <form id="noteForm" class="stack">
-        <input id="noteTitle" placeholder="Judul catatan" maxlength="150" required>
-        <select id="category">
-          <option>Pribadi</option>
-          <option>Sekolah</option>
-          <option>TJKT</option>
-          <option>Ide</option>
-          <option>Pekerjaan</option>
-        </select>    
-<div class="stack">
-  <label for="noteImage">🖼️ Lampiran gambar (opsional)</label>
-  <input
-    id="noteImage"
-    type="file"
-    accept="image/jpeg,image/png,image/webp,image/gif"
-  >
-  <p class="muted small">Format JPG, PNG, WEBP, atau GIF. Maksimal 5 MB.</p>
-</div>
-        <textarea id="content" placeholder="Tulis catatanmu di sini..."></textarea>
-        <label class="row"><input id="favorite" type="checkbox" style="width:auto"> Jadikan favorit</label>
-        <label class="row"><input id="checklistMode" type="checkbox" style="width:auto"> Ini checklist tugas</label>
-        <div id="checklistArea" class="hidden">
-          <label for="checkItems">Satu tugas per baris. Awali tugas selesai dengan [x].</label>
-          <textarea id="checkItems" placeholder="Contoh:&#10;Belajar subnetting&#10;[x] Membaca materi DHCP"></textarea>
+        <div>
+          <label for="password">Kata sandi</label>
+          <input
+            id="password"
+            type="password"
+            minlength="6"
+            autocomplete="current-password"
+            required
+          >
         </div>
-        <div class="row">
-          <button id="saveBtn">Simpan catatan</button>
-          <button type="button" class="secondary hidden" id="cancelEdit">Batal edit</button>
-        </div>
+
+        <button type="submit" id="authSubmit">Login</button>
       </form>
-      <p class="muted small">Catatan tersimpan saat kamu menekan tombol simpan.</p>
+
+      <p style="margin-top:14px">
+        <button class="secondary" id="switchAuth">
+          Belum punya akun? Daftar
+        </button>
+      </p>
     </section>
 
-    <section class="card" id="notesPage">
-      <h2>📚 Semua catatan</h2>
-      <div class="stats-grid">
-  <div class="stat-card">
-    <span class="stat-icon">📝</span>
-    <div class="stat-label">Total catatan</div>
-    <div class="stat-number" id="totalNotes">0</div>
-  </div>
-  <div class="stat-card">
-    <span class="stat-icon">⭐</span>
-    <div class="stat-label">Catatan favorit</div>
-    <div class="stat-number" id="totalFavorites">0</div>
-  </div>
-  <div class="stat-card">
-    <span class="stat-icon">✅</span>
-    <div class="stat-label">Tugas selesai</div>
-    <div class="stat-number" id="totalTasksDone">0</div>
-  </div>
-      </div>
-      <div class="stack">
-        <input id="search" placeholder="Cari judul atau isi catatan...">
-        <select id="filterCategory">
-          <option value="">Semua kategori</option>
-          <option>Pribadi</option><option>Sekolah</option>
-          <option>TJKT</option><option>Ide</option><option>Pekerjaan</option>
-        </select>
-        <label class="row"><input id="onlyFavorites" type="checkbox" style="width:auto"> Tampilkan favorit saja</label>
-      </div>
-      <button type="button" id="newNoteBtn">+ Buat catatan</button>
-      <p id="count" class="muted"></p>
-            <div id="notes"></div>
-    </section>
-  </main>
-</div>
+    <!-- ===================================================
+         14. DASHBOARD PENGGUNA
+         =================================================== -->
+    <main id="app">
+      <section class="dashboard-summary">
+        <div class="welcome">
+          <span class="eyebrow">RUANG KERJAMU</span>
+          <h2>Halo, selamat datang 👋</h2>
+          <p class="muted">
+            Semua ide dan catatanmu, dalam satu tempat.
+          </p>
+        </div>
 
+        <div class="summary-card">
+          <span class="summary-icon">📝</span>
+          <div>
+            <strong>Catatan pribadimu</strong>
+            <p id="userEmail" class="muted"></p>
+          </div>
+          <button type="button" class="danger" id="logoutBtn">
+            Logout
+          </button>
+        </div>
+      </section>
+
+      <!-- =================================================
+           15. EDITOR CATATAN DAN LAMPIRAN GAMBAR
+           ================================================= -->
+      <section class="card hidden" id="editorPage">
+        <h2 id="formTitle">✍️ Buat catatan</h2>
+
+        <button type="button" id="backBtn" class="secondary">
+          ← Kembali ke daftar
+        </button>
+
+        <form id="noteForm" class="stack">
+          <input
+            id="noteTitle"
+            placeholder="Judul catatan"
+            maxlength="150"
+            required
+          >
+
+          <!-- Kategori catatan -->
+          <select id="category">
+            <option>Pribadi</option>
+            <option>Sekolah</option>
+            <option>TJKT</option>
+            <option>Ide</option>
+            <option>Pekerjaan</option>
+          </select>
+
+          <!-- Unggah gambar -->
+          <div class="stack">
+            <label for="noteImage">
+              🖼️ Lampiran gambar (opsional)
+            </label>
+
+            <input
+              id="noteImage"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+            >
+
+            <p class="muted small">
+              Format JPG, PNG, WEBP, atau GIF. Maksimal 5 MB.
+            </p>
+          </div>
+
+          <!-- Isi catatan -->
+          <textarea
+            id="content"
+            placeholder="Tulis catatanmu di sini..."
+          ></textarea>
+
+          <!-- Pilihan favorit -->
+          <label class="row">
+            <input
+              id="favorite"
+              type="checkbox"
+              style="width:auto"
+            >
+            Jadikan favorit
+          </label>
+
+          <!-- Pilihan checklist -->
+          <label class="row">
+            <input
+              id="checklistMode"
+              type="checkbox"
+              style="width:auto"
+            >
+            Ini checklist tugas
+          </label>
+
+          <!-- Daftar tugas checklist -->
+          <div id="checklistArea" class="hidden">
+            <label for="checkItems">
+              Satu tugas per baris. Awali tugas selesai dengan [x].
+            </label>
+
+            <textarea
+              id="checkItems"
+              placeholder="Contoh:&#10;Belajar subnetting&#10;[x] Membaca materi DHCP"
+            ></textarea>
+          </div>
+
+          <!-- Tombol penyimpanan -->
+          <div class="row">
+            <button id="saveBtn">Simpan catatan</button>
+
+            <button
+              type="button"
+              class="secondary hidden"
+              id="cancelEdit"
+            >
+              Batal edit
+            </button>
+          </div>
+        </form>
+
+        <p class="muted small">
+          Catatan tersimpan saat kamu menekan tombol simpan.
+        </p>
+      </section>
+
+      <!-- =================================================
+           16. DAFTAR CATATAN DAN STATISTIK
+           ================================================= -->
+      <section class="card" id="notesPage">
+        <h2>📚 Semua catatan</h2>
+
+        <!-- Statistik -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">📝</span>
+            <div class="stat-label">Total catatan</div>
+            <div class="stat-number" id="totalNotes">0</div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon">⭐</span>
+            <div class="stat-label">Catatan favorit</div>
+            <div class="stat-number" id="totalFavorites">0</div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon">✅</span>
+            <div class="stat-label">Tugas selesai</div>
+            <div class="stat-number" id="totalTasksDone">0</div>
+          </div>
+        </div>
+
+        <!-- Pencarian dan filter -->
+        <div class="stack">
+          <input
+            id="search"
+            placeholder="Cari judul atau isi catatan..."
+          >
+
+          <select id="filterCategory">
+            <option value="">Semua kategori</option>
+            <option>Pribadi</option>
+            <option>Sekolah</option>
+            <option>TJKT</option>
+            <option>Ide</option>
+            <option>Pekerjaan</option>
+          </select>
+
+          <label class="row">
+            <input
+              id="onlyFavorites"
+              type="checkbox"
+              style="width:auto"
+            >
+            Tampilkan favorit saja
+          </label>
+        </div>
+
+        <!-- Tombol membuat catatan baru -->
+        <button type="button" id="newNoteBtn">
+          + Buat catatan
+        </button>
+
+        <!-- Jumlah catatan yang ditampilkan -->
+        <p id="count" class="muted"></p>
+
+        <!-- Catatan dibuat oleh JavaScript -->
+        <div id="notes"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- =====================================================
+       AKHIR HTML — BAGIAN JAVASCRIPT ADA DI BAGIAN 3
+       ===================================================== -->
 <script>
 (() => {
+  // ==========================================
+  // 1. KONFIGURASI SUPABASE
+  // ==========================================
   const SUPABASE_URL = "https://jwuhtnzjhtcmblqxovgk.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
 
   const $ = id => document.getElementById(id);
-  
   let messageTimer;
 
-const message = (text, duration = 3000) => {
-  const box = $("message");
-  clearTimeout(messageTimer);
+  // ==========================================
+  // 2. PESAN NOTIFIKASI
+  // ==========================================
+  function message(text, duration = 3000) {
+    const box = $("message");
+    if (!box) return;
 
-  box.textContent = text;
-  box.style.display = "block";
-  box.style.color = "#ffffff";
+    clearTimeout(messageTimer);
+    box.textContent = text;
+    box.style.display = "block";
+    box.style.color = "#ffffff";
 
-  if (duration > 0) {
-    messageTimer = setTimeout(() => {
-      box.textContent = "";
-    }, duration);
+    if (duration > 0) {
+      messageTimer = setTimeout(() => {
+        box.textContent = "";
+      }, duration);
+    }
   }
-};
-  const configOK = SUPABASE_URL.startsWith("https://") &&
-  (SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
-   SUPABASE_PUBLISHABLE_KEY.startsWith("eyJ"));
+
+  // ==========================================
+  // 3. PEMERIKSAAN KONFIGURASI
+  // ==========================================
+  const configOK =
+    SUPABASE_URL.startsWith("https://") &&
+    (
+      SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
+      SUPABASE_PUBLISHABLE_KEY.startsWith("eyJ")
+    );
 
   if (!window.supabase) {
     message("Gagal memuat pustaka aplikasi. Periksa koneksi internet lalu muat ulang.");
     return;
   }
+
   if (!configOK) {
-    message("Konfigurasi belum lengkap. Ganti SUPABASE_URL dan SUPABASE_PUBLISHABLE_KEY dengan nilai dari proyek Supabase.");
+    message("Konfigurasi Supabase belum lengkap.");
     return;
   }
 
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  let user = null, notes = [], editingId = null, isSignup = false;
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  let user = null;
+  let notes = [];
+  let editingId = null;
+  let isSignup = false;
   let editingImageUrl = null;
 
+  // ==========================================
+  // 4. TEMA TERANG / GELAP
+  // ==========================================
   $("themeBtn").onclick = () => {
     document.body.classList.toggle("dark");
-    $("themeBtn").textContent = document.body.classList.contains("dark") ? "☀️ Tema" : "🌙 Tema";
+
+    $("themeBtn").textContent =
+      document.body.classList.contains("dark")
+        ? "☀️ Tema"
+        : "🌙 Tema";
   };
+
+  // ==========================================
+  // 5. LOGIN DAN PENDAFTARAN
+  // ==========================================
   $("switchAuth").onclick = () => {
     isSignup = !isSignup;
-    $("authTitle").textContent = isSignup ? "Buat akun CatatanKu" : "Masuk ke CatatanKu";
-    $("authSubmit").textContent = isSignup ? "Daftar" : "Login";
-    $("password").autocomplete = isSignup ? "new-password" : "current-password";
-    $("switchAuth").textContent = isSignup ? "Sudah punya akun? Login" : "Belum punya akun? Daftar";
+
+    $("authTitle").textContent = isSignup
+      ? "Buat akun CatatanKu"
+      : "Masuk ke CatatanKu";
+
+    $("authSubmit").textContent = isSignup
+      ? "Daftar"
+      : "Login";
+
+    $("password").autocomplete = isSignup
+      ? "new-password"
+      : "current-password";
+
+    $("switchAuth").textContent = isSignup
+      ? "Sudah punya akun? Login"
+      : "Belum punya akun? Daftar";
+
     message("");
   };
 
   $("authForm").onsubmit = async e => {
     e.preventDefault();
+
     const email = $("email").value.trim();
     const password = $("password").value;
+
     $("authSubmit").disabled = true;
+
     try {
       if (isSignup) {
-        const {data,error} = await db.auth.signUp({email,password});
+        const { data, error } = await db.auth.signUp({
+          email,
+          password
+        });
+
         if (error) throw error;
+
         if (!data.session) {
           message("Pendaftaran berhasil. Periksa email untuk konfirmasi, lalu login.");
-        } else message("Akun berhasil dibuat.");
+        } else {
+          message("Akun berhasil dibuat.");
+        }
       } else {
-        const {error} = await db.auth.signInWithPassword({email,password});
+        const { error } = await db.auth.signInWithPassword({
+          email,
+          password
+        });
+
         if (error) throw error;
+
         message("Login berhasil.");
       }
-    } catch(err) { message("Gagal: " + err.message); }
-    finally { $("authSubmit").disabled = false; }
+    } catch (err) {
+      message("Gagal: " + err.message);
+    } finally {
+      $("authSubmit").disabled = false;
+    }
   };
 
+  // ==========================================
+  // 6. LOGOUT
+  // ==========================================
   $("logoutBtn").onclick = async () => {
-    const {error} = await db.auth.signOut();
-    if (error) message("Gagal logout: " + error.message);
+    const { error } = await db.auth.signOut();
+
+    if (error) {
+      message("Gagal logout: " + error.message);
+    }
   };
 
-  $("checklistMode").onchange = () =>
-    $("checklistArea").classList.toggle("hidden", !$("checklistMode").checked);
-  
-async function compressImage(file) {
-  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-    return file;
+  // ==========================================
+  // 7. MODE CHECKLIST
+  // ==========================================
+  $("checklistMode").onchange = () => {
+    $("checklistArea").classList.toggle(
+      "hidden",
+      !$("checklistMode").checked
+    );
+  };
+
+  // ==========================================
+  // 8. KOMPRESI GAMBAR
+  // ==========================================
+  async function compressImage(file) {
+    if (
+      !["image/jpeg", "image/png", "image/webp"].includes(file.type)
+    ) {
+      return file;
+    }
+
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    try {
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = reject;
+        image.src = objectUrl;
+      });
+
+      const maxSide = 1600;
+      const scale = Math.min(
+        1,
+        maxSide / Math.max(image.width, image.height)
+      );
+
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(image.width * scale);
+      canvas.height = Math.round(image.height * scale);
+
+      const context = canvas.getContext("2d");
+      context.drawImage(
+        image,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      const blob = await new Promise(resolve =>
+        canvas.toBlob(resolve, "image/jpeg", 0.78)
+      );
+
+      if (!blob || blob.size >= file.size) {
+        return file;
+      }
+
+      return new File(
+        [blob],
+        file.name.replace(/\.[^.]+$/, "") + ".jpg",
+        { type: "image/jpeg" }
+      );
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   }
 
-  const image = new Image();
-  const objectUrl = URL.createObjectURL(file);
-
-  try {
-    await new Promise((resolve, reject) => {
-      image.onload = resolve;
-      image.onerror = reject;
-      image.src = objectUrl;
-    });
-
-    const maxSide = 1600;
-    const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(image.width * scale);
-    canvas.height = Math.round(image.height * scale);
-
-    const context = canvas.getContext("2d");
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-    const blob = await new Promise(resolve =>
-      canvas.toBlob(resolve, "image/jpeg", 0.78)
-    );
-
-    if (!blob || blob.size >= file.size) return file;
-
-    return new File(
-      [blob],
-      file.name.replace(/\.[^.]+$/, "") + ".jpg",
-      { type: "image/jpeg" }
-    );
-  } finally {
-    URL.revokeObjectURL(objectUrl);
-  }
-}
-
+  // ==========================================
+  // 9. NAVIGASI HALAMAN CATATAN
+  // ==========================================
   function resetForm() {
     editingId = null;
     editingImageUrl = null;
+
     $("noteForm").reset();
     $("formTitle").textContent = "✍️ Buat catatan";
     $("saveBtn").textContent = "Simpan catatan";
     $("cancelEdit").classList.add("hidden");
     $("checklistArea").classList.add("hidden");
   }
+
   function showNotesPage() {
-  $("editorPage").classList.add("hidden");
-  $("notesPage").classList.remove("hidden");
-}
-
-function openEditor() {
-  resetForm();
-  $("notesPage").classList.add("hidden");
-  $("editorPage").classList.remove("hidden");
-  window.scrollTo({top: 0, behavior: "smooth"});
-}
-
-$("newNoteBtn").onclick = openEditor;
-
-$("backBtn").onclick = () => {
-  resetForm();
-  showNotesPage();
-};
-  $("cancelEdit").onclick = () => {
-  resetForm();
-  showNotesPage();
-};
-
-  $("noteForm").onsubmit = async e => {
-    e.preventDefault();
-    if (!user) return;
-    
-const imageFile = $("noteImage").files[0];
-
-if (imageFile) {
-  const allowedTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "image/gif"
-  ];
-
-  if (!allowedTypes.includes(imageFile.type)) {
-    message("Format gambar harus JPG, PNG, WEBP, atau GIF.");
-    return;
+    $("editorPage").classList.add("hidden");
+    $("notesPage").classList.remove("hidden");
   }
 
-  if (imageFile.size > 5 * 1024 * 1024) {
-    message("Ukuran gambar maksimal 5 MB.");
-    return;
-  }
-}
+  function openEditor() {
+    resetForm();
 
-    const checklist = $("checklistMode").checked;
-    const checklistItems = checklist
-      ? $("checkItems").value.split("\n").map(line => ({
-          text: line.replace(/^\[x\]\s*/i,"").trim(),
-          done: /^\[x\]\s*/i.test(line)
-        })).filter(item => item.text)
-      : [];
-    
-let imageUrl = editingImageUrl;
+    $("notesPage").classList.add("hidden");
+    $("editorPage").classList.remove("hidden");
 
-if (imageFile) {
-  message("⏳ Sedang mengompres foto...", 0);
-const mulaiKompres = Date.now();
-const uploadFile = await compressImage(imageFile);
-console.log("Waktu kompresi:", Date.now() - mulaiKompres, "ms");
-message("⏳ Foto siap, sedang mengunggah...", 0);
-  const safeName = uploadFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const imagePath = `${user.id}/${Date.now()}-${safeName}`;
-
-  const { data: uploadData, error: uploadError } =
-    await db.storage
-      .from("catatan-gambat")
-      
-.upload(imagePath, uploadFile, {
-  contentType: uploadFile.type,
-  upsert: false
-});
-
-  if (uploadError) {
-    message("Gagal mengunggah gambar: " + uploadError.message);
-    return;
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
 
-  const { data: publicData } = db.storage
-    .from("catatan-gambat")
-    .getPublicUrl(uploadData.path);
+  $("newNoteBtn").onclick = openEditor;
 
-  imageUrl = publicData.publicUrl;
-}
-    const record = {
-      title: $("noteTitle").value.trim(),
-      content: $("content").value,
-      image_url: imageUrl,
-      category: $("category").value,
-      is_favorite: $("favorite").checked,
-      is_checklist: checklist,
-      checklist_items: checklistItems,
-      updated_at: new Date().toISOString()
-    };
-    $("saveBtn").disabled = true;
-    try {
-      let result;
-      if (editingId) {
-        result = await db.from("notes").update(record).eq("id",editingId).eq("user_id",user.id);
-      } else {
-        result = await db.from("notes").insert({...record,user_id:user.id});
-      }
-      if (result.error) throw result.error;
-      message("✅ Catatan dan lampiran berhasil disimpan.");
-      resetForm();
-      showNotesPage();
-      await loadNotes();
-    } catch(err) { message("Gagal menyimpan: " + err.message); }
-    finally { $("saveBtn").disabled = false; }
+  $("backBtn").onclick = () => {
+    resetForm();
+    showNotesPage();
   };
 
+  $("cancelEdit").onclick = () => {
+    resetForm();
+    showNotesPage();
+  };
+
+  // ==========================================
+  // 10. SIMPAN CATATAN DAN UNGGAH GAMBAR
+  // ==========================================
+  $("noteForm").onsubmit = async e => {
+    e.preventDefault();
+
+    if (!user) {
+      message("Silakan login terlebih dahulu.");
+      return;
+    }
+
+    const imageFile = $("noteImage").files[0];
+
+    if (imageFile) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif"
+      ];
+
+      if (!allowedTypes.includes(imageFile.type)) {
+        message("Format gambar harus JPG, PNG, WEBP, atau GIF.");
+        return;
+      }
+
+      if (imageFile.size > 5 * 1024 * 1024) {
+        message("Ukuran gambar maksimal 5 MB.");
+        return;
+      }
+    }
+
+    const checklist = $("checklistMode").checked;
+
+    const checklistItems = checklist
+      ? $("checkItems").value
+          .split("\n")
+          .map(line => ({
+            text: line.replace(/^\[x\]\s*/i, "").trim(),
+            done: /^\[x\]\s*/i.test(line)
+          }))
+          .filter(item => item.text)
+      : [];
+
+    $("saveBtn").disabled = true;
+
+    try {
+      let imageUrl = editingImageUrl;
+
+      if (imageFile) {
+        message("⏳ Sedang mengompres foto...", 0);
+
+        const uploadFile = await compressImage(imageFile);
+
+        message("⏳ Foto siap, sedang mengunggah...", 0);
+
+        const safeName = uploadFile.name.replace(
+          /[^a-zA-Z0-9._-]/g,
+          "_"
+        );
+
+        const imagePath =
+          `${user.id}/${Date.now()}-${safeName}`;
+
+        const {
+          data: uploadData,
+          error: uploadError
+        } = await db.storage
+          .from("catatan-gambat")
+          .upload(imagePath, uploadFile, {
+            contentType: uploadFile.type,
+            upsert: false
+          });
+
+        if (uploadError) {
+          throw new Error(
+            "Gagal mengunggah gambar: " + uploadError.message
+          );
+        }
+
+        const { data: publicData } = db.storage
+          .from("catatan-gambat")
+          .getPublicUrl(uploadData.path);
+
+        imageUrl = publicData.publicUrl;
+      }
+
+      const record = {
+        title: $("noteTitle").value.trim(),
+        content: $("content").value,
+        image_url: imageUrl,
+        category: $("category").value,
+        is_favorite: $("favorite").checked,
+        is_checklist: checklist,
+        checklist_items: checklistItems,
+        updated_at: new Date().toISOString()
+      };
+
+      let result;
+
+      if (editingId) {
+        result = await db
+          .from("notes")
+          .update(record)
+          .eq("id", editingId)
+          .eq("user_id", user.id);
+      } else {
+        result = await db
+          .from("notes")
+          .insert({
+            ...record,
+            user_id: user.id
+          });
+      }
+
+      if (result.error) throw result.error;
+
+      message("✅ Catatan dan lampiran berhasil disimpan.");
+
+      resetForm();
+      showNotesPage();
+
+      await loadNotes();
+    } catch (err) {
+      message("Gagal menyimpan: " + err.message);
+    } finally {
+      $("saveBtn").disabled = false;
+    }
+  };
+
+  // ==========================================
+  // 11. TAMPILKAN CATATAN
+  // ==========================================
   function renderNotes() {
     const query = $("search").value.toLowerCase().trim();
     const category = $("filterCategory").value;
     const fav = $("onlyFavorites").checked;
+
     const shown = notes.filter(n =>
-      (!query || (n.title + " " + n.content).toLowerCase().includes(query)) &&
+      (
+        !query ||
+        ((n.title || "") + " " + (n.content || ""))
+          .toLowerCase()
+          .includes(query)
+      ) &&
       (!category || n.category === category) &&
       (!fav || n.is_favorite)
     );
+
     $("count").textContent = `${shown.length} catatan`;
     $("totalNotes").textContent = notes.length;
 
-$("totalFavorites").textContent =
-  notes.filter(n => n.is_favorite).length;
+    $("totalFavorites").textContent =
+      notes.filter(n => n.is_favorite).length;
 
-$("totalTasksDone").textContent =
-  notes.reduce((total, n) => {
-    if (!n.is_checklist || !Array.isArray(n.checklist_items)) {
-      return total;
-    }
-    return total + n.checklist_items.filter(item => item.done).length;
-  }, 0);
+    $("totalTasksDone").textContent = notes.reduce(
+      (total, n) => {
+        if (
+          !n.is_checklist ||
+          !Array.isArray(n.checklist_items)
+        ) {
+          return total;
+        }
+
+        return total +
+          n.checklist_items.filter(item => item.done).length;
+      },
+      0
+    );
+
     $("notes").replaceChildren();
+
     if (!shown.length) {
       $("notes").textContent = "Belum ada catatan yang cocok.";
       return;
     }
+
     for (const n of shown) {
       const box = document.createElement("article");
       box.className = "note";
+
       const title = document.createElement("h3");
-title.textContent = (n.is_favorite ? "⭐ " : "") + n.title;
-const categoryTag = document.createElement("span");
-categoryTag.className = "category-tag";
-categoryTag.textContent = n.category || "Umum";
-const meta = document.createElement("p");
-meta.className = "muted small";
-meta.textContent = new Date(
-  n.updated_at || n.created_at
-).toLocaleString("id-ID");
-box.append(title, categoryTag, meta);
-      
-if (n.image_url) {
-  const image = document.createElement("img");
-  image.src = n.image_url;
-  image.alt = "Lampiran gambar: " + (n.title || "catatan");
-  image.loading = "lazy";
-  image.style.width = "100%";
-  image.style.maxHeight = "320px";
-  image.style.objectFit = "contain";
-  image.style.borderRadius = "12px";
-  image.style.margin = "10px 0";
-  box.append(image);
-}
+      title.textContent =
+        (n.is_favorite ? "⭐ " : "") + n.title;
 
-if (n.is_checklist && Array.isArray(n.checklist_items)) {
-  for (const item of n.checklist_items) {
-    const line = document.createElement("label");
-    line.className = "row task-line";
+      const categoryTag = document.createElement("span");
+      categoryTag.className = "category-tag";
+      categoryTag.textContent = n.category || "Umum";
 
-    const span = document.createElement("span");
-    span.textContent = item.text;
+      const meta = document.createElement("p");
+      meta.className = "muted small";
+      meta.textContent = new Date(
+        n.updated_at || n.created_at
+      ).toLocaleString("id-ID");
 
-    const cb = document.createElement("input");
-    cb.className = "task-checkbox";
-    cb.type = "checkbox";
-    cb.checked = !!item.done;
-    cb.style.width = "28px";
-    cb.style.height = "28px";
+      box.append(title, categoryTag, meta);
 
-    cb.onchange = () => updateChecklist(n, item.text, cb.checked);
+      // Lampiran gambar
+      if (n.image_url) {
+        const image = document.createElement("img");
+        image.src = n.image_url;
+        image.alt = "Lampiran gambar: " + (n.title || "catatan");
+        image.loading = "lazy";
+        image.style.width = "100%";
+        image.style.maxHeight = "320px";
+        image.style.objectFit = "contain";
+        image.style.borderRadius = "12px";
+        image.style.margin = "10px 0";
 
-    line.append(span, cb);
-    box.append(line);
-  }
-} else {
+        box.append(image);
+      }
+
+      // Isi checklist atau teks biasa
+      if (
+        n.is_checklist &&
+        Array.isArray(n.checklist_items)
+      ) {
+        for (const item of n.checklist_items) {
+          const line = document.createElement("label");
+          line.className = "row task-line";
+
+          const span = document.createElement("span");
+          span.textContent = item.text;
+
+          const cb = document.createElement("input");
+          cb.className = "task-checkbox";
+          cb.type = "checkbox";
+          cb.checked = !!item.done;
+          cb.style.width = "28px";
+          cb.style.height = "28px";
+
+          cb.onchange = () =>
+            updateChecklist(n, item.text, cb.checked);
+
+          line.append(span, cb);
+          box.append(line);
+        }
+      } else {
         const body = document.createElement("pre");
         body.textContent = n.content || "";
         box.append(body);
       }
+
+      // Tombol tindakan
       const actions = document.createElement("div");
       actions.className = "row";
+
       const edit = document.createElement("button");
-      edit.textContent = "Edit"; edit.onclick = () => editNote(n);
+      edit.textContent = "Edit";
+      edit.onclick = () => editNote(n);
+
       const favorite = document.createElement("button");
       favorite.className = "secondary";
-      favorite.textContent = n.is_favorite ? "Hapus favorit" : "Jadikan favorit";
+      favorite.textContent = n.is_favorite
+        ? "Hapus favorit"
+        : "Jadikan favorit";
       favorite.onclick = () => toggleFavorite(n);
+
       const del = document.createElement("button");
-      del.className = "danger"; del.textContent = "Hapus";
+      del.className = "danger";
+      del.textContent = "Hapus";
       del.onclick = () => deleteNote(n);
-      actions.append(edit,favorite,del); box.append(actions);
+
+      actions.append(edit, favorite, del);
+      box.append(actions);
+
       $("notes").append(box);
     }
   }
 
+  // ==========================================
+  // 12. MUAT DATA CATATAN DARI SUPABASE
+  // ==========================================
   async function loadNotes() {
-    const {data,error} = await db.from("notes").select("*").order("updated_at",{ascending:false});
-    if (error) { message("Gagal memuat catatan: " + error.message); return; }
-    notes = data || []; renderNotes();
+    const { data, error } = await db
+      .from("notes")
+      .select("*")
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      message("Gagal memuat catatan: " + error.message);
+      return;
+    }
+
+    notes = data || [];
+    renderNotes();
   }
 
+  // ==========================================
+  // 13. EDIT CATATAN
+  // ==========================================
   function editNote(n) {
     editingId = n.id;
     editingImageUrl = n.image_url || null;
-    $("noteTitle").value = n.title;
+
+    $("noteTitle").value = n.title || "";
     $("content").value = n.content || "";
-    $("category").value = n.category;
-    $("favorite").checked = n.is_favorite;
-    $("checklistMode").checked = n.is_checklist;
-    $("checklistArea").classList.toggle("hidden",!n.is_checklist);
-    $("checkItems").value = (n.checklist_items || []).map(i => (i.done ? "[x] " : "") + i.text).join("\n");
+    $("category").value = n.category || "";
+    $("favorite").checked = !!n.is_favorite;
+    $("checklistMode").checked = !!n.is_checklist;
+
+    $("checklistArea").classList.toggle(
+      "hidden",
+      !n.is_checklist
+    );
+
+    $("checkItems").value = (n.checklist_items || [])
+      .map(i => (i.done ? "[x] " : "") + i.text)
+      .join("\n");
+
     $("formTitle").textContent = "✏️ Edit catatan";
     $("saveBtn").textContent = "Simpan perubahan";
     $("cancelEdit").classList.remove("hidden");
+
     $("editorPage").classList.remove("hidden");
     $("notesPage").classList.add("hidden");
-    window.scrollTo({top:0,behavior:"smooth"});
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   }
 
-  async function updateChecklist(n,text,done) {
-    const items = (n.checklist_items || []).map(i => i.text === text ? {...i,done} : i);
-    const {error} = await db.from("notes").update({checklist_items:items,updated_at:new Date().toISOString()})
-      .eq("id",n.id).eq("user_id",user.id);
-    if (error) message("Gagal memperbarui checklist: " + error.message);
-    else await loadNotes();
+  // ==========================================
+  // 14. PERBARUI CHECKLIST
+  // ==========================================
+  async function updateChecklist(n, text, done) {
+    const items = (n.checklist_items || []).map(i =>
+      i.text === text ? { ...i, done } : i
+    );
+
+    const { error } = await db
+      .from("notes")
+      .update({
+        checklist_items: items,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", n.id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      message("Gagal memperbarui checklist: " + error.message);
+    } else {
+      await loadNotes();
+    }
   }
+
+  // ==========================================
+  // 15. FAVORIT
+  // ==========================================
   async function toggleFavorite(n) {
-    const {error} = await db.from("notes").update({is_favorite:!n.is_favorite,updated_at:new Date().toISOString()})
-      .eq("id",n.id).eq("user_id",user.id);
-    if (error) message("Gagal memperbarui favorit: " + error.message);
-    else await loadNotes();
+    const { error } = await db
+      .from("notes")
+      .update({
+        is_favorite: !n.is_favorite,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", n.id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      message("Gagal memperbarui favorit: " + error.message);
+    } else {
+      await loadNotes();
+    }
   }
+
+  // ==========================================
+  // 16. HAPUS CATATAN
+  // ==========================================
   async function deleteNote(n) {
-    if (!confirm("Hapus catatan ini? Tindakan ini tidak bisa dibatalkan.")) return;
-    const {error} = await db.from("notes").delete().eq("id",n.id).eq("user_id",user.id);
-    if (error) message("Gagal menghapus: " + error.message);
-    else { message("Catatan dihapus."); await loadNotes(); }
+    if (!confirm(
+      "Hapus catatan ini? Tindakan ini tidak bisa dibatalkan."
+    )) {
+      return;
+    }
+
+    const { error } = await db
+      .from("notes")
+      .delete()
+      .eq("id", n.id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      message("Gagal menghapus: " + error.message);
+    } else {
+      message("Catatan dihapus.");
+      await loadNotes();
+    }
   }
+
+  // ==========================================
+  // 17. PENCARIAN DAN FILTER
+  // ==========================================
   $("search").oninput = renderNotes;
   $("filterCategory").onchange = renderNotes;
   $("onlyFavorites").onchange = renderNotes;
 
+  // ==========================================
+  // 18. STATUS LOGIN DAN APLIKASI
+  // ==========================================
   function showApp(sessionUser) {
     user = sessionUser || null;
+
     $("auth").style.display = user ? "none" : "block";
     $("app").style.display = user ? "block" : "none";
+
     $("userEmail").textContent = user ? user.email : "";
-    if (user) loadNotes();
-    else { notes = []; $("notes").replaceChildren(); resetForm(); }
+
+    if (user) {
+      loadNotes();
+    } else {
+      notes = [];
+      $("notes").replaceChildren();
+      resetForm();
+    }
   }
-  db.auth.onAuthStateChange((_event,session) => showApp(session?.user || null));
-  db.auth.getSession().then(({data}) => showApp(data.session?.user || null));
+
+  // ==========================================
+  // 19. CEK SESI SUPABASE
+  // ==========================================
+  db.auth.onAuthStateChange((_event, session) => {
+    showApp(session?.user || null);
+  });
+
+  db.auth.getSession().then(({ data, error }) => {
+    if (error) {
+      message("Gagal memeriksa sesi login: " + error.message);
+      return;
+    }
+
+    showApp(data.session?.user || null);
+  });
 })();
 </script>
 </body>
