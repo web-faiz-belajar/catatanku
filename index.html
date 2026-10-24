@@ -802,7 +802,12 @@ button:active {
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
 
   const $ = id => document.getElementById(id);
-  const message = text => $("message").textContent = text;
+  const message = text => {
+  const box = $("message");
+  box.textContent = text;
+  box.style.display = "block";
+  box.style.color = "#dc2626";
+};
   const configOK = SUPABASE_URL.startsWith("https://") &&
   (SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
    SUPABASE_PUBLISHABLE_KEY.startsWith("eyJ"));
