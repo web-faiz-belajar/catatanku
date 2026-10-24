@@ -970,16 +970,18 @@ if (imageFile) {
 let imageUrl = editingImageUrl;
 
 if (imageFile) {
-  const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const uploadFile = await compressImage(imageFile);
+  const safeName = uploadFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const imagePath = `${user.id}/${Date.now()}-${safeName}`;
 
   const { data: uploadData, error: uploadError } =
     await db.storage
       .from("catatan-gambat")
-      .upload(imagePath, imageFile, {
-        contentType: imageFile.type,
-        upsert: false
-      });
+      
+.upload(imagePath, uploadFile, {
+  contentType: uploadFile.type,
+  upsert: false
+});
 
   if (uploadError) {
     message("Gagal mengunggah gambar: " + uploadError.message);
