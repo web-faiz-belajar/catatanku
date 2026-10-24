@@ -847,18 +847,24 @@ textarea {
 [data-theme="dark"] #readView .read-title {
   color: #f8fafc;
 }
-    
-/* Header akun tetap di atas saat halaman di-scroll */
-#app .user-info {
+
+/* Header akun tetap menempel di atas layar */
+#app .dashboard-summary {
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-sizing: border-box;
-  width: 100%;
   margin-top: 0;
-  border-radius: 0 0 22px 22px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background: rgba(10, 30, 55, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Kartu akun */
+#app .dashboard-summary .summary-card {
+  margin-top: 0;
+  margin-bottom: 0;
 }
     
   </style>
