@@ -1424,21 +1424,6 @@ function message(text, duration = 3000) {
 
       box.append(title, categoryTag, meta);
 
-      // Lampiran gambar
-      if (n.image_url) {
-        const image = document.createElement("img");
-        image.src = n.image_url;
-        image.alt = "Lampiran gambar: " + (n.title || "catatan");
-        image.loading = "lazy";
-        image.style.width = "100%";
-        image.style.maxHeight = "320px";
-        image.style.objectFit = "contain";
-        image.style.borderRadius = "12px";
-        image.style.margin = "10px 0";
-
-        box.append(image);
-      }
-
       // Isi checklist atau teks biasa
       if (
         n.is_checklist &&
