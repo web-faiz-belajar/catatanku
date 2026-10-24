@@ -875,6 +875,16 @@ textarea {
   color: inherit;
 }
     
+/* Sembunyikan header utama dan kartu akun saat baca/edit */
+body.read-mode #app > .header,
+body.edit-mode #app > .header,
+body.read-mode #app > header,
+body.edit-mode #app > header,
+body.read-mode #app .dashboard-summary,
+body.edit-mode #app .dashboard-summary {
+  display: none !important;
+}
+    
   </style>
 </head>
 <body>
