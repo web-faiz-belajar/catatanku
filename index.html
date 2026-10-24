@@ -73,7 +73,24 @@ h1,h2,h3,p{margin-top:0}
 .secondary{background:var(--border);color:var(--text)}
 .danger{background:#dc2626}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-#message{white-space:pre-wrap;margin:12px 0;color:var(--primary)}
+#message {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: #1e293b;
+  color: #ffffff;
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.5;
+}
 .hidden{display:none!important}
 label{display:block;font-size:14px;margin-bottom:5px}
   
@@ -802,11 +819,23 @@ button:active {
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
 
   const $ = id => document.getElementById(id);
-  const message = text => {
+  
+  let messageTimer;
+
+const message = (text, duration = 3000) => {
   const box = $("message");
+  clearTimeout(messageTimer);
+
   box.textContent = text;
   box.style.display = "block";
-  box.style.color = "#dc2626";
+  box.style.color = "#ffffff";
+
+  if (duration > 0) {
+    messageTimer = setTimeout(() => {
+      box.textContent = "";
+    }, duration);
+  }
+};
 };
   const configOK = SUPABASE_URL.startsWith("https://") &&
   (SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
