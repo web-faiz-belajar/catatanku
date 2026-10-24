@@ -1584,11 +1584,14 @@ function openReadView(n) {
     img.classList.add("hidden");
   }
 
-  $("notesPage").classList.add("hidden");
-  $("editorPage").classList.add("hidden");
-  $("readView").classList.remove("hidden");
+$("notesPage").classList.add("hidden");
+$("editorPage").classList.add("hidden");
+$("readView").classList.remove("hidden");
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+document.body.classList.add("read-mode");
+document.body.classList.remove("edit-mode");
+
+window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
