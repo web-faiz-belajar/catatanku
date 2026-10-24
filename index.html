@@ -659,6 +659,60 @@ textarea {
         font-size: 23px;
       }
     }
+    
+.welcome-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.8);
+  backdrop-filter: blur(6px);
+}
+
+.welcome-box {
+  width: 100%;
+  max-width: 340px;
+  padding: 28px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 22px;
+  background: #0f172a;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.welcome-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.welcome-box h2 {
+  font-size: 22px;
+  line-height: 1.4;
+  margin: 0 0 12px;
+}
+
+.welcome-box p {
+  color: #cbd5e1;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.welcome-box button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #6366f1;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+    
   </style>
 </head>
 <body>
@@ -720,15 +774,15 @@ textarea {
          14. DASHBOARD PENGGUNA
          =================================================== -->
     <main id="app">
+<div id="welcomePopup" class="welcome-popup">
+  <div class="welcome-box">
+    <div class="welcome-icon">📝</div>
+    <h2>Halo, selamat datang di CatatanKu</h2>
+    <p>Catat tugas sekolah, pekerjaan, dan ide kamu di sini</p>
+    <button type="button" id="closeWelcome">Oke</button>
+  </div>
+</div>
       <section class="dashboard-summary">
-        <div class="welcome">
-          <span class="eyebrow">RUANG KERJAMU</span>
-          <h2>Halo, selamat datang 👋</h2>
-          <p class="muted">
-            Semua ide dan catatanmu, dalam satu tempat.
-          </p>
-        </div>
-
         <div class="summary-card">
           <span class="summary-icon">📝</span>
           <div>
@@ -1618,6 +1672,15 @@ showApp(data.session?.user || null);
         .catch((error) => console.error("Service worker gagal:", error));
     });
   }
+</script>
+
+<script>
+  const welcomePopup = document.getElementById("welcomePopup");
+  const closeWelcome = document.getElementById("closeWelcome");
+
+  closeWelcome.addEventListener("click", () => {
+    welcomePopup.style.display = "none";
+  });
 </script>
 
 </body>
