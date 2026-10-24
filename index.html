@@ -920,30 +920,22 @@
   // 2. PESAN NOTIFIKASI
   // ==========================================
   
+
 function message(text, duration = 3000) {
-  const box = $("message");
-  if (!box) return;
+    const box = $("message");
+    if (!box) return;
 
-  clearTimeout(messageTimer);
+    clearTimeout(messageTimer);
+    box.textContent = text;
+    box.style.display = "block";
+    box.style.color = "#ffffff";
 
-  if (!text) {
-    box.textContent = "";
-    box.style.display = "none";
-    return;
+    if (duration > 0) {
+      messageTimer = setTimeout(() => {
+        box.textContent = "";
+      }, duration);
+    }
   }
-
-  box.textContent = text;
-  box.style.display = "block";
-  box.style.color = "#ffffff";
-
-  if (duration > 0) {
-    messageTimer = setTimeout(() => {
-      box.textContent = "";
-      box.style.display = "none";
-    }, duration);
-  }
-}
-
 
   // ==========================================
   // 3. PEMERIKSAAN KONFIGURASI
