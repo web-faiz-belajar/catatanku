@@ -1410,11 +1410,71 @@ body:not(.dark) #readView #readDate {
 
   const $ = id => document.getElementById(id);
   let messageTimer;
+async function makePinHash(pin, salt) {
+  const encoder = new TextEncoder();
 
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(pin),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      salt: Uint8Array.from(
+        atob(salt),
+        c => c.charCodeAt(0)
+      ),
+      iterations: 150000,
+      hash: "SHA-256"
+    },
+    key,
+    256
+  );
+
+  return btoa(
+    String.fromCharCode(...new Uint8Array(bits))
+  );
+}
+
+function makePinSalt() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return btoa(String.fromCharCode(...bytes));
+}
+
+async function verifyNotePin(note) {
+  if (!note.is_locked) return true;
+
+  const pin = prompt("Catatan terkunci. Masukkan PIN 6 digit:");
+
+  if (pin === null) return false;
+
+  if (!/^\d{6}$/.test(pin)) {
+    alert("PIN harus terdiri dari 6 digit angka.");
+    return false;
+  }
+
+  if (!note.pin_hash || !note.pin_salt) {
+    alert("PIN belum tersimpan. Catatan perlu disimpan ulang dengan PIN.");
+    return false;
+  }
+
+  const hash = await makePinHash(pin, note.pin_salt);
+
+  if (hash !== note.pin_hash) {
+    alert("PIN salah.");
+    return false;
+  }
+
+  return true;
+}
+  
   // ==========================================
   // 2. PESAN NOTIFIKASI
   // ==========================================
-  
 
 function message(text, duration = 3000) {
     const box = $("message");
