@@ -1781,12 +1781,14 @@ if (n.image_url) {
     $("saveBtn").textContent = "Simpan perubahan";
     $("cancelEdit").classList.remove("hidden");
 
-    $("notesPage").classList.add("hidden");
-    $("editorPage").classList.add("hidden");
-    $("readView").classList.remove("hidden");
+    
+$("notesPage").classList.add("hidden");
+$("readView").classList.add("hidden");
+$("editorPage").classList.remove("hidden");
 
-document.body.classList.add("read-mode");
-document.body.classList.remove("edit-mode");
+document.body.classList.add("edit-mode");
+document.body.classList.remove("read-mode");
+
 
 window.scrollTo({ top: 0, behavior: "smooth" });
   }
