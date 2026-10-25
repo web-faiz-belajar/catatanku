@@ -1734,6 +1734,7 @@ themeBtn.onclick = () => {
             "Gagal mengunggah gambar: " + uploadError.message
           );
         }
+        console.log("Path foto berhasil diunggah:", uploadData?.path);
 
         const { data: signedData, error: signedError } =
   await db.storage
