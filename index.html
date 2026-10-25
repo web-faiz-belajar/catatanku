@@ -2061,7 +2061,16 @@ document.addEventListener("DOMContentLoaded", () => {
 const read = document.createElement("button");
 read.textContent = "Baca";
 read.className = "secondary";
-read.onclick = () => openReadView(n);
+read.onclick = async () => {
+  try {
+    if (await verifyNotePin(n)) {
+      openReadView(n);
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Gagal memeriksa PIN.");
+  }
+};
 
       const edit = document.createElement("button");
       edit.textContent = "Edit";
