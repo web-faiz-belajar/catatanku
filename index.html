@@ -427,14 +427,9 @@
 ‎    </footer>
 ‎  </main>
 ‎
-‎  <!-- Kode Bagian 2 ditempel setelah baris ini -->
 ‎<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 ‎<script>
 ‎"use strict";
-‎
-‎/* =====================================
-‎   KONFIGURASI SUPABASE
-‎   ===================================== */
 ‎
 ‎const SUPABASE_URL = "https://jwuhtnzjhtcmblqxovgk.supabase.co";
 ‎const SUPABASE_KEY = "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
@@ -444,20 +439,12 @@
 ‎  SUPABASE_KEY
 ‎);
 ‎
-‎/* =====================================
-‎   VARIABEL APLIKASI
-‎   ===================================== */
-‎
 ‎let currentUser = null;
 ‎let notes = [];
 ‎let editingNote = null;
 ‎let currentImageUrl = "";
 ‎let currentImagePreviewUrl = "";
 ‎let unlockedNotes = new Set();
-‎
-‎/* =====================================
-‎   MEMBANTU MENGAMBIL ELEMEN HTML
-‎   ===================================== */
 ‎
 ‎const $ = (id) => document.getElementById(id);
 ‎
@@ -493,10 +480,6 @@
 ‎    button.disabled = false;
 ‎  }
 ‎}
-‎
-‎/* =====================================
-‎   PENANGANAN ERROR
-‎   ===================================== */
 ‎
 ‎function getErrorMessage(error) {
 ‎  console.error("Detail error CatatanKu:", error);
@@ -541,10 +524,6 @@
 ‎  return "Terjadi kesalahan. Periksa koneksi dan Console browser.";
 ‎}
 ‎
-‎/* =====================================
-‎   FUNGSI TEKS AMAN
-‎   ===================================== */
-‎
 ‎function escapeHTML(value) {
 ‎  return String(value ?? "").replace(/[&<>"']/g, (char) => {
 ‎    const entities = {
@@ -573,10 +552,6 @@
 ‎    timeStyle: "short"
 ‎  });
 ‎}
-‎
-‎/* =====================================
-‎   FUNGSI PIN ENAM DIGIT
-‎   ===================================== */
 ‎
 ‎function validatePin(pin) {
 ‎  return /^[0-9]{6}$/.test(String(pin));
@@ -653,10 +628,6 @@
 ‎  return enteredHash === note.pin_hash;
 ‎}
 ‎
-‎/* =====================================
-‎   PEMBERSIHAN URL PREVIEW GAMBAR
-‎   ===================================== */
-‎
 ‎function clearImagePreview() {
 ‎  if (currentImagePreviewUrl) {
 ‎    URL.revokeObjectURL(currentImagePreviewUrl);
@@ -685,10 +656,6 @@
 ‎
 ‎  $("imagePreview").appendChild(image);
 ‎}
-‎
-‎/* =====================================
-‎   KOMPRES GAMBAR
-‎   ===================================== */
 ‎
 ‎async function compressImage(file, maxSize = 1200, quality = 0.8) {
 ‎  if (!file || !file.type.startsWith("image/")) {
@@ -746,17 +713,7 @@
 ‎    URL.revokeObjectURL(temporaryUrl);
 ‎  }
 ‎}
-‎
-‎/* =====================================
-‎   AKHIR BAGIAN 2
-‎   KODE BAGIAN 3 DITEMPEL SETELAH INI
-‎   ===================================== */
 ‎<script>
-‎/* =====================================
-‎   BAGIAN 3: AUTENTIKASI AKUN
-‎   ===================================== */
-‎
-‎/* Menampilkan panel sesuai status login */
 ‎function updateAuthUI(user) {
 ‎  currentUser = user || null;
 ‎
@@ -784,10 +741,6 @@
 ‎    $("notesList").replaceChildren();
 ‎  }
 ‎}
-‎
-‎/* =====================================
-‎   LOGIN
-‎   ===================================== */
 ‎
 ‎async function loginAccount() {
 ‎  const email = $("email").value.trim();
@@ -834,10 +787,6 @@
 ‎    setButtonLoading("loginBtn", false);
 ‎  }
 ‎}
-‎
-‎/* =====================================
-‎   DAFTAR AKUN
-‎   ===================================== */
 ‎
 ‎async function registerAccount() {
 ‎  const email = $("email").value.trim();
@@ -902,10 +851,6 @@
 ‎  }
 ‎}
 ‎
-‎/* =====================================
-‎   LOGOUT
-‎   ===================================== */
-‎
 ‎async function logoutAccount() {
 ‎  try {
 ‎    const { error } = await supabaseClient.auth.signOut();
@@ -933,10 +878,6 @@
 ‎    );
 ‎  }
 ‎}
-‎
-‎/* =====================================
-‎   MEMERIKSA SESI LOGIN SAAT HALAMAN DIBUKA
-‎   ===================================== */
 ‎
 ‎async function restoreLoginSession() {
 ‎  try {
@@ -966,33 +907,17 @@
 ‎  }
 ‎}
 ‎
-‎/* =====================================
-‎   EVENT TOMBOL AKUN
-‎   ===================================== */
-‎
 ‎$("loginBtn").addEventListener("click", loginAccount);
 ‎$("registerBtn").addEventListener("click", registerAccount);
 ‎$("logoutBtn").addEventListener("click", logoutAccount);
-‎
-‎/* Enter pada kolom password untuk login */
 ‎$("password").addEventListener("keydown", event => {
 ‎  if (event.key === "Enter") {
 ‎    event.preventDefault();
 ‎    loginAccount();
 ‎  }
 ‎});
-‎
-‎/* =====================================
-‎   AKHIR BAGIAN 3
-‎   KODE BAGIAN 4 DITEMPEL SETELAH INI
-‎   ===================================== */
 ‎</script>
 ‎<script>
-‎/* =====================================
-‎   BAGIAN 4: MEMUAT CATATAN
-‎   ===================================== */
-‎
-‎/* Mengambil catatan milik akun yang sedang login */
 ‎async function loadNotes() {
 ‎  if (!currentUser) return;
 ‎
@@ -1009,7 +934,6 @@
 ‎
 ‎    notes = data || [];
 ‎
-‎    // Catatan yang dimuat ulang harus dikunci kembali.
 ‎    unlockedNotes.clear();
 ‎
 ‎    renderNotes();
@@ -1029,10 +953,6 @@
 ‎    );
 ‎  }
 ‎}
-‎
-‎/* =====================================
-‎   MENAMPILKAN DAFTAR CATATAN
-‎   ===================================== */
 ‎
 ‎function renderNotes() {
 ‎  const list = $("notesList");
@@ -1191,10 +1111,6 @@
 ‎  });
 ‎}
 ‎
-‎/* =====================================
-‎   AKHIR BAGIAN 4
-‎   KODE BAGIAN 5 DITEMPEL SETELAH INI
-‎   ===================================== */
 ‎</script>
 ‎<script>
 ‎async function toggleFavorite(id) {
@@ -1263,23 +1179,14 @@
 ‎</script>
 
 <script>  
-// ===============================  
-// PENCARIAN CATATAN  
-// ===============================  
 $("searchInput").addEventListener("input", () => {  
   renderNotes();  
 });  
   
-// ===============================  
-// MUAT ULANG CATATAN  
-// ===============================  
 $("refreshBtn").addEventListener("click", async () => {  
   await loadNotes();  
 });  
-  
-// ===============================  
-// GANTI TEMA  
-// ===============================  
+
 let lightThemeEnabled = false;  
   
 function applyTheme() {  
@@ -1315,9 +1222,6 @@ $("themeBtn").addEventListener("click", () => {
     : "Tema Terang";  
 });  
   
-// ===============================  
-// PERUBAHAN STATUS LOGIN  
-// ===============================  
 supabaseClient.auth.onAuthStateChange((_event, session) => {  
   const newUser = session?.user || null;  
   const oldUserId = currentUser?.id || null;  
@@ -1337,12 +1241,8 @@ supabaseClient.auth.onAuthStateChange((_event, session) => {
   }  
 });  
   
-// ===============================  
-// INISIALISASI APLIKASI  
-// ===============================  
 applyTheme();  
 updateAuthUI(null);  
 restoreLoginSession();  
 </script>  </body>  
 </html>  
-‎
