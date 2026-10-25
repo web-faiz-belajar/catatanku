@@ -1,2344 +1,1348 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-  <!-- 1. Pengaturan dokumen -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CatatanKu</title>
-  <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#0f172a">
-
-  <!-- 2. Pustaka Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- 3. CSS utama -->
-  <style>
-    :root {
-      --bg: #f3f5fb;
-      --card: #fff;
-      --text: #20243a;
-      --muted: #6c7285;
-      --primary: #6366f1;
-      --border: #e2e5ef;
-    }
-
-    body.dark {
-      --bg: #121522;
-      --card: #1c2132;
-      --text: #f4f5ff;
-      --muted: #b1b7cb;
-      --border: #343a50;
-    }
-
-    /* Gaya dasar */
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: #eaf5ff;
-      font: 16px system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse at 15% 10%, rgba(0,153,255,.24), transparent 38%),
-        radial-gradient(ellipse at 90% 70%, rgba(93,86,255,.18), transparent 40%),
-        linear-gradient(135deg, #071525, #0b2542 55%, #101b35);
-      background-attachment: fixed;
-      transition: background .2s, color .2s;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-      border: 1px solid rgba(150,210,255,.25);
-      border-radius: 12px;
-      padding: 11px 16px;
-      background: linear-gradient(135deg, #1685f8, #3864df);
-      color: #fff;
-      font-weight: 600;
-      box-shadow: 0 5px 16px rgba(0,115,255,.15);
-      transition: transform .18s ease, opacity .18s ease;
-    }
-
-    button:active {
-      transform: scale(.97);
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: .6;
-    }
-
-    button.secondary {
-      color: #eaf5ff;
-      background: rgba(255,255,255,.08);
-      border-color: rgba(180,220,255,.25);
-      box-shadow: none;
-    }
-
-    button.danger {
-      background: linear-gradient(135deg, #ef4444, #b91c1c);
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 12px 14px;
-      color: #f2f9ff;
-      background: rgba(5,22,42,.55);
-      border: 1px solid rgba(150,200,255,.25);
-      border-radius: 12px;
-      outline: none;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #48aaff;
-      box-shadow: 0 0 0 3px rgba(56,161,255,.14);
-    }
-    
-textarea {
-  min-height: 45vh;
-  height: 45vh;
-  padding: 16px;
-  resize: vertical;
-  line-height: 1.7;
-  font-size: 17px;
-}
-
-    h1, h2, h3, p {
-      margin-top: 0;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
-
-    .wrap {
-      width: min(100% - 28px, 900px);
-      margin: 0 auto;
-      padding: 24px 0 40px;
-    }
-
-    .muted {
-      color: #b6cce3;
-      font-size: 14px;
-    }
-
-    .small {
-      font-size: 13px;
-    }
-
-    .stack {
-      display: grid;
-      gap: 12px;
-    }
-
-    .row {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .row > * {
-      flex: 1;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    #app {
-      display: none;
-    }
-
-    /* Header dan tombol tema */
-    .top {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 180px;
-      padding: 60px 12px 24px;
-      background: rgba(255,255,255,.075);
-      border: 1px solid rgba(190,225,255,.20);
-      border-radius: 22px;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow:
-        0 12px 35px rgba(0,0,0,.20),
-        inset 0 1px 0 rgba(255,255,255,.08);
-    }
-
-    .header-content {
-      width: 100%;
-      text-align: center;
-    }
-
-    .header-content h1 {
-      margin-bottom: 16px;
-      color: #f2f9ff;
-      letter-spacing: -.5px;
-    }
-
-    .header-content .creator {
-      margin-bottom: 12px;
-    }
-
-    .header-content .muted {
-      margin-bottom: 0;
-    }
-
-    .creator {
-      margin-top: 8px;
-      color: #94a3b8;
-      font-size: 14px;
-      line-height: 1.6;
-      text-align: center;
-    }
-
-    #themeBtn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      z-index: 2;
-      width: auto;
-    }
-
-    /* Panel dan kartu */
-    .card,
-    .note,
-    .panel,
-    .auth-box,
-    .note-card,
-    section.card {
-      padding: 20px;
-      background: rgba(255,255,255,.075);
-      border: 1px solid rgba(190,225,255,.20);
-      border-radius: 22px;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow:
-        0 12px 35px rgba(0,0,0,.20),
-        inset 0 1px 0 rgba(255,255,255,.08);
-    }
-
-    .card {
-      margin-bottom: 20px;
-    }
-
-    #auth {
-      margin-top: 16px;
-    }
-
-    /* Notifikasi */
-    #message {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      z-index: 9999;
-      display: none;
-      width: max-content;
-      max-width: calc(100% - 32px);
-      padding: 14px 18px;
-      color: #fff;
-      background: #1e293b;
-      border-radius: 14px;
-      box-shadow: 0 8px 28px rgba(0,0,0,.25);
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      font-size: 14px;
-      line-height: 1.5;
-      transform: translateX(-50%);
-    }
-    
-    #message:empty {
-      display: none !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-    }
-
-    /* Dashboard dan statistik */
-    .dashboard-summary {
-      display: grid;
-      gap: 18px;
-      margin: 24px 0;
-    }
-
-    .welcome {
-      padding: 8px 2px;
-    }
-
-    .welcome h2 {
-      margin: 8px 0;
-      font-size: clamp(24px, 5vw, 34px);
-      letter-spacing: -.7px;
-    }
-
-    .eyebrow {
-      color: #65bdff;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 2px;
-    }
-
-    .summary-card {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 14px;
-      padding: 18px;
-      background: rgba(150,205,255,.09);
-      border: 1px solid rgba(170,220,255,.22);
-      border-radius: 20px;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-
-    .summary-icon {
-      display: grid;
-      place-items: center;
-      flex-shrink: 0;
-      width: 48px;
-      height: 48px;
-      background: rgba(45,150,255,.2);
-      border-radius: 15px;
-      font-size: 23px;
-    }
-
-    .summary-card > div {
-      flex: 1;
-      min-width: 120px;
-    }
-
-    .summary-card p {
-      margin: 5px 0 0;
-      overflow-wrap: anywhere;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin: 18px 0;
-    }
-
-    .stat-card {
-      min-width: 0;
-      padding: 16px 8px;
-      background: linear-gradient(
-        145deg,
-        rgba(59,130,246,.20),
-        rgba(30,64,175,.08)
-      );
-      border: 1px solid rgba(147,197,253,.25);
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,.08);
-    }
-
-    .stat-icon {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 25px;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      line-height: 1.4;
-      opacity: .85;
-    }
-
-    .stat-number {
-      margin-top: 7px;
-      color: #60a5fa;
-      font-size: 27px;
-      font-weight: 800;
-    }
-
-    /* Kartu catatan */
-    #notes {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-      gap: 14px;
-      margin-top: 14px;
-    }
-
-    .note {
-      position: relative;
-      min-width: 0;
-      margin-top: 14px;
-      padding: 20px;
-      overflow-wrap: anywhere;
-      background: rgba(135,190,255,.09);
-      border: 1px solid rgba(160,215,255,.20);
-      border-radius: 22px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.12);
-      transition: transform .2s ease, box-shadow .2s ease;
-    }
-
-    #notes > *:hover {
-      transform: translateY(-3px);
-      background: rgba(135,190,255,.15);
-    }
-
-    .note:active {
-      transform: scale(.985);
-      box-shadow: 0 5px 16px rgba(0,0,0,.12);
-    }
-
-    .note h3 {
-      margin: 0 0 12px;
-      font-size: 19px;
-      font-weight: 750;
-      line-height: 1.5;
-      letter-spacing: .2px;
-      overflow-wrap: anywhere;
-    }
-
-    .note pre {
-      margin: 12px 0;
-      color: var(--text);
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      font: inherit;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .note .muted {
-      line-height: 1.5;
-    }
-
-    .note .row {
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .note .row button {
-      flex: 1;
-      min-width: 80px;
-      min-height: 42px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .note .row button:active {
-      transform: scale(.96);
-    }
-
-    .category-tag {
-      display: inline-block;
-      width: fit-content;
-      max-width: 100%;
-      margin: 0 0 10px;
-      padding: 6px 12px;
-      color: #60a5fa;
-      background: rgba(59,130,246,.15);
-      border: 1px solid rgba(96,165,250,.3);
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .2px;
-      overflow-wrap: anywhere;
-    }
-
-    /* Checklist */
-    .task-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      width: 100%;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .task-line span {
-      flex: 1;
-      min-width: 0;
-      overflow-wrap: anywhere;
-      line-height: 1.5;
-    }
-
-    .task-checkbox {
-      width: 28px !important;
-      height: 28px !important;
-      min-width: 28px;
-      margin: 0;
-      accent-color: #3b82f6;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .note > .task-checkbox {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-    }
-
-    /* Navigasi dan pencarian */
-    #backBtn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 18px;
-      margin-bottom: 8px;
-      color: #93c5fd;
-      background: rgba(96,165,250,.12);
-      border: 1px solid rgba(147,197,253,.35);
-      border-radius: 14px;
-      font-size: 15px;
-      font-weight: 600;
-      box-shadow: none;
-      transition: background .2s ease;
-    }
-
-    #backBtn:hover {
-      background: rgba(96,165,250,.22);
-    }
-
-    #search,
-    #filterCategory {
-      border-radius: 14px;
-    }
-
-    hr {
-      border: 0;
-      border-top: 1px solid rgba(180,220,255,.18);
-    }
-
-    /* Tema terang */
-    body:not(.dark) {
-      color: #173452;
-      background-image:
-        radial-gradient(ellipse at 15% 10%, rgba(0,153,255,.13), transparent 38%),
-        linear-gradient(135deg, #dceeff, #f4f8ff 55%, #d8e9ff);
-      background-attachment: fixed;
-    }
-
-    body:not(.dark) .top,
-    body:not(.dark) section.card {
-      background: rgba(255,255,255,.60);
-      border-color: rgba(80,140,210,.24);
-      box-shadow: 0 12px 35px rgba(30,80,140,.10);
-    }
-
-    body:not(.dark) h1 {
-      color: #173452;
-    }
-
-    body:not(.dark) .muted {
-      color: #526b86;
-    }
-
-    body:not(.dark) button.secondary {
-      color: #173452;
-      background: rgba(255,255,255,.72);
-      border-color: rgba(80,140,210,.3);
-    }
-
-    body:not(.dark) input,
-    body:not(.dark) textarea,
-    body:not(.dark) select {
-      color: #173452;
-      background: rgba(255,255,255,.8);
-      border-color: #b8d3f0;
-    }
-
-    body:not(.dark) .card,
-    body:not(.dark) .note,
-    body:not(.dark) .panel,
-    body:not(.dark) .auth-box,
-    body:not(.dark) .note-card {
-      background: rgba(255,255,255,.7);
-      border-color: rgba(80,140,210,.22);
-    }
-
-    body:not(.dark) #notes > * {
-      background: rgba(255,255,255,.55);
-      border-color: rgba(80,140,210,.22);
-      box-shadow: 0 8px 22px rgba(30,80,140,.08);
-    }
-
-    /* Tema gelap */
-    body.dark {
-      color: #eaf5ff !important;
-      background-image:
-        radial-gradient(ellipse at 15% 10%, rgba(0,153,255,.24), transparent 38%),
-        radial-gradient(ellipse at 90% 70%, rgba(93,86,255,.18), transparent 40%),
-        linear-gradient(135deg, #071525, #0b2542 55%, #101b35) !important;
-      background-attachment: fixed;
-    }
-
-    body.dark .top,
-    body.dark .card,
-    body.dark .note,
-    body.dark .panel,
-    body.dark .auth-box,
-    body.dark .note-card {
-      color: #eaf5ff !important;
-      background: rgba(255,255,255,.07) !important;
-      border-color: rgba(180,220,255,.22) !important;
-    }
-
-    body.dark h1,
-    body.dark h2,
-    body.dark h3,
-    body.dark p,
-    body.dark label {
-      color: #eaf5ff;
-    }
-
-    body.dark .muted {
-      color: #b6cce3 !important;
-    }
-
-    /* Tampilan responsif */
-    @media (max-width: 600px) {
-      .wrap {
-        width: calc(100% - 22px);
-        padding-top: 14px;
-      }
-
-      .top {
-        padding: 60px 16px 24px;
-        border-radius: 18px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      section.card {
-        padding: 15px;
-        border-radius: 18px;
-      }
-
-      #notes {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .dashboard-summary {
-        margin: 16px 0;
-      }
-
-      .summary-card {
-        padding: 14px;
-      }
-    }
-
-    @media (max-width: 380px) {
-      .stats-grid {
-        gap: 6px;
-      }
-
-      .stat-card {
-        padding: 12px 4px;
-      }
-
-      .stat-label {
-        font-size: 11px;
-      }
-
-      .stat-number {
-        font-size: 23px;
-      }
-    }
-    
-.welcome-popup {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(2, 6, 23, 0.8);
-  backdrop-filter: blur(6px);
-}
-
-.welcome-box {
-  width: 100%;
-  max-width: 340px;
-  padding: 28px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 22px;
-  background: #0f172a;
-  color: #fff;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-}
-
-.welcome-icon {
-  font-size: 42px;
-  margin-bottom: 12px;
-}
-
-.welcome-box h2 {
-  font-size: 22px;
-  line-height: 1.4;
-  margin: 0 0 12px;
-}
-
-.welcome-box p {
-  color: #cbd5e1;
-  line-height: 1.6;
-  margin-bottom: 22px;
-}
-
-.welcome-box button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: #6366f1;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-    #fullImageViewer {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-}
-
-#fullImageViewer.hidden {
-  display: none;
-}
-
-#fullImageViewer img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-#closeFullImage {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 2;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 10px;
-  background: #fff;
-  color: #111;
-  font-size: 16px;
-}
-    
-/* Memberi jarak pada halaman detail catatan */
-#readView {
-  padding: 20px;
-  box-sizing: border-box;
-  width: 100%;
-}
-
-/* Agar gambar tidak melebar keluar dari konten */
-#readView img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 12px;
-}
-    
-/* ===== Tampilan Baca Catatan ===== */
-#readView {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 20px 16px 28px;
-}
-
-/* Kartu baca berbentuk gelembung */
-#readView .read-card {
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 24px;
-  padding: 20px 18px;
-  margin: 16px 0;
-  box-shadow: 0 8px 24px rgba(31, 72, 120, 0.10);
-  overflow-wrap: anywhere;
-}
-
-/* Judul catatan */
-#readView h1,
-#readView h2 {
-  margin: 16px 0;
-  line-height: 1.4;
-  color: #17365b;
-}
-
-/* Isi catatan */
-#readView p {
-  line-height: 1.8;
-  margin: 14px 0;
-  white-space: pre-wrap;
-}
-
-/* Gambar catatan */
-#readView img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 18px auto;
-  border-radius: 16px;
-}
-
-/* Tombol kembali */
-#readView #backToNotes {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 46px;
-  padding: 0 20px;
-  margin: 0 0 18px;
-  border: none;
-  border-radius: 15px;
-  background: linear-gradient(135deg, #1685f8, #3862e8);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.22);
-  cursor: pointer;
-}
-
-/* Efek saat tombol ditekan */
-#readView #backToNotes:active {
-  transform: scale(0.97);
-}
-
-/* Judul pada fitur Baca Catatan */
-#readView h1,
-#readView h2,
-#readView .read-title {
-  color: #1e293b;
-  background: transparent;
-  font-weight: 800;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-
-/* Warna judul saat mode gelap */
-.dark #readView h1,
-.dark #readView h2,
-.dark #readView .read-title,
-[data-theme="dark"] #readView h1,
-[data-theme="dark"] #readView h2,
-[data-theme="dark"] #readView .read-title {
-  color: #f8fafc;
-}
-
-/* Header akun tetap di atas dan warna lebih serasi */
-#app .dashboard-summary {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  margin-top: 0;
-  padding: 8px 0;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-/* Kartu akun: teks jelas pada kedua tema */
-#app .dashboard-summary .summary-card {
-  margin: 0;
-  background: var(--card-bg, rgba(255, 255, 255, 0.92));
-  color: var(--text-color, #17324d);
-  border: 1px solid rgba(120, 160, 200, 0.3);
-  border-radius: 22px;
-  box-shadow: 0 6px 20px rgba(30, 70, 120, 0.10);
-}
-
-/* Sembunyikan header dan kartu akun saat baca/edit */
-body.read-mode .wrap > header.top,
-body.edit-mode .wrap > header.top,
-body.read-mode #app .dashboard-summary,
-body.edit-mode #app .dashboard-summary {
-  display: none !important;
-}
-    
-/* Sembunyikan header utama saat mode baca dan edit */
-body.read-mode .wrap > header.top,
-body.edit-mode .wrap > header.top {
-  display: none !important;
-}
-    
-/* Kartu akun saat tema gelap */
-body.dark #app .dashboard-summary .summary-card {
-  background: rgba(15, 23, 42, 0.88);
-  color: #eaf2ff;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-}
-
-/* Teks di dalam kartu akun */
-body.dark #app .dashboard-summary .summary-card strong,
-body.dark #app .dashboard-summary .summary-card p,
-body.dark #app .dashboard-summary .summary-card .muted {
-  color: #eaf2ff;
-}
-    
-/* ===== Kartu kaca buram fitur Baca ===== */
-#readView {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 18px 14px 32px;
-  color: #eaf5ff;
-}
-
-/* Kartu judul dan metadata */
-#readView #readTitle,
-#readView #readCategory,
-#readView #readDate {
-  box-sizing: border-box;
-  padding: 16px 18px;
-  margin: 12px 0 0;
-  background: rgba(255, 255, 255, 0.075);
-  border: 1px solid rgba(190, 225, 255, 0.20);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.20),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* Kartu judul */
-#readView #readTitle {
-  margin-top: 18px;
-  border-radius: 22px 22px 12px 12px;
-  color: #f2f9ff;
-  font-size: 24px;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-}
-
-/* Kartu kategori dan tanggal */
-#readView #readCategory {
-  margin-top: 10px;
-  border-radius: 14px;
-  color: #b6cce3;
-}
-
-#readView #readDate {
-  margin-top: 10px;
-  border-radius: 14px;
-  color: #b6cce3;
-}
-
-/* Kartu isi catatan terpisah */
-#readView #readContent {
-  box-sizing: border-box;
-  min-width: 0;
-  margin-top: 16px;
-  padding: 20px 18px;
-  background: rgba(255, 255, 255, 0.075);
-  border: 1px solid rgba(190, 225, 255, 0.20);
-  border-radius: 22px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.20),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  overflow-wrap: anywhere;
-}
-
-#readView #readContent p {
-  margin: 0;
-  color: #eaf5ff;
-  font-size: 16px;
-  line-height: 1.9;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-/* Kartu gambar */
-#readView #readImage:not(.hidden) {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
-  margin-top: 16px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.075);
-  border: 1px solid rgba(190, 225, 255, 0.20);
-  border-radius: 22px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* Tombol kembali */
-#readView #backToNotes {
-  margin-bottom: 4px;
-}
-
-/* Tema terang */
-body:not(.dark) #readView #readTitle,
-body:not(.dark) #readView #readCategory,
-body:not(.dark) #readView #readDate,
-body:not(.dark) #readView #readContent,
-body:not(.dark) #readView #readImage:not(.hidden) {
-  background: rgba(255, 255, 255, 0.58);
-  border-color: rgba(80, 140, 210, 0.24);
-  box-shadow: 0 12px 35px rgba(30, 80, 140, 0.10);
-}
-
-body:not(.dark) #readView #readTitle,
-body:not(.dark) #readView #readContent p {
-  color: #173452;
-}
-
-body:not(.dark) #readView #readCategory,
-body:not(.dark) #readView #readDate {
-  color: #526b86;
-    }
-
-/* ===== Kartu kaca buram fitur Baca ===== */
-#readView {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 18px 14px 32px;
-  color: #eaf5ff;
-}
-
-/* Kartu judul dan metadata */
-#readView #readTitle,
-#readView #readCategory,
-#readView #readDate {
-  box-sizing: border-box;
-  padding: 16px 18px;
-  margin: 12px 0 0;
-  background: rgba(255, 255, 255, 0.075);
-  border: 1px solid rgba(190, 225, 255, 0.20);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.20),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* Kartu judul */
-#readView #readTitle {
-  margin-top: 18px;
-  border-radius: 22px 22px 12px 12px;
-  color: #f2f9ff;
-  font-size: 24px;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-}
-
-/* Kartu kategori dan tanggal */
-#readView #readCategory {
-  margin-top: 10px;
-  border-radius: 14px;
-  color: #b6cce3;
-}
-
-#readView #readDate {
-  margin-top: 10px;
-  border-radius: 14px;
-  color: #b6cce3;
-}
-
-/* Kartu isi catatan terpisah */
-#readView #readContent {
-  box-sizing: border-box;
-  min-width: 0;
-  margin-top: 16px;
-  padding: 20px 18px;
-  background: rgba(255, 255, 255, 0.075);
-  border: 1px solid rgba(190, 225, 255, 0.20);
-  border-radius: 22px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.20),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  overflow-wrap: anywhere;
-}
-
-#readView #readContent p {
-  margin: 0;
-  color: #eaf5ff;
-  font-size: 16px;
-  line-height: 1.9;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-/* Kartu gambar */
-#readView #readImage:not(.hidden) {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
-  margin-top: 16px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.075);
-  border: 1px solid rgba(190, 225, 255, 0.20);
-  border-radius: 22px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* Tombol kembali */
-#readView #backToNotes {
-  margin-bottom: 4px;
-}
-
-/* Tema terang */
-body:not(.dark) #readView #readTitle,
-body:not(.dark) #readView #readCategory,
-body:not(.dark) #readView #readDate,
-body:not(.dark) #readView #readContent,
-body:not(.dark) #readView #readImage:not(.hidden) {
-  background: rgba(255, 255, 255, 0.58);
-  border-color: rgba(80, 140, 210, 0.24);
-  box-shadow: 0 12px 35px rgba(30, 80, 140, 0.10);
-}
-
-body:not(.dark) #readView #readTitle,
-body:not(.dark) #readView #readContent p {
-  color: #173452;
-}
-
-body:not(.dark) #readView #readCategory,
-body:not(.dark) #readView #readDate {
-  color: #526b86;
-}
-    
-  </style>
-</head>
-<body>
-  <!-- =====================================================
-       12. PEMBUNGKUS DAN HEADER
-       ===================================================== -->
-  <div class="wrap">
-    <header class="top">
-      <button class="secondary" id="themeBtn">🌙 Tema</button>
-
-      <div class="header-content">
-        <h1>catatanku</h1>
-        <p class="creator">
-          Dibuat oleh: Muhammad Al Faiz<br>
-      </div>
-    </header>
-
-    <!-- Notifikasi aplikasi -->
-    <div id="message" role="status"></div>
-
-    <!-- ===================================================
-         13. LOGIN DAN PENDAFTARAN
-         =================================================== -->
-    <section id="auth" class="card">
-      <h2 id="authTitle">Masuk ke CatatanKu</h2>
-      <p class="muted">Catatanmu tersimpan online di akunmu.</p>
-
-      <form id="authForm" class="stack">
-        <div>
-          <label for="email">Email</label>
-          <input id="email" type="email" autocomplete="email" required>
-        </div>
-
-        <div>
-          <label for="password">Kata sandi</label>
-          <input
-            id="password"
-            type="password"
-            minlength="6"
-            autocomplete="current-password"
-            required
-          >
-        </div>
-
-        <button type="submit" id="authSubmit">Login</button>
-      </form>
-
-      <p style="margin-top:14px">
-        <button class="secondary" id="switchAuth">
-          Belum punya akun? Daftar
-        </button>
-      </p>
-    </section>
-
-    <!-- ===================================================
-         14. DASHBOARD PENGGUNA
-         =================================================== -->
-    <main id="app">
-<div id="welcomePopup" class="welcome-popup">
-  <div class="welcome-box">
-    <div class="welcome-icon">📝</div>
-    <h2>Halo, selamat datang di CatatanKu</h2>
-    <p>Catat tugas sekolah, pekerjaan, dan ide kamu di sini</p>
-    <button type="button" id="closeWelcome">Oke</button>
-  </div>
-</div>
-      <section class="dashboard-summary">
-        <div class="summary-card">
-          <span class="summary-icon">📝</span>
-          <div>
-            <strong>Catatan pribadimu</strong>
-            <p id="userEmail" class="muted"></p>
-          </div>
-          <button type="button" class="danger" id="logoutBtn">
-            Logout
-          </button>
-        </div>
-      </section>
-
-      <!-- =================================================
-           15. EDITOR CATATAN DAN LAMPIRAN GAMBAR
-           ================================================= -->
-      <section class="card hidden" id="editorPage">
-        <h2 id="formTitle">✍️ Buat catatan</h2>
-
-        <button type="button" id="backBtn" class="secondary">
-          ← Kembali ke daftar
-        </button>
-
-        <form id="noteForm" class="stack">
-          <input
-            id="noteTitle"
-            placeholder="Judul catatan"
-            maxlength="150"
-            required
-          >
-
-          <!-- Unggah gambar -->
-          <div class="stack">
-            <label for="noteImage">
-              🖼️ Lampiran gambar (opsional)
-            </label>
-
-            <input
-              id="noteImage"
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-            >
-            <div id="imagePreviewBox" class="hidden">
-  <p>Gambar saat ini:</p>
-  <img
-    id="imagePreview"
-    src=""
-    alt="Preview gambar catatan"
-    style="max-width:100%; max-height:250px; object-fit:contain; border-radius:12px;"
-  >
-  <button type="button" id="removeImageBtn">
-    Hapus gambar
-  </button>
-</div>
-<div id="fullImageViewer" class="hidden">
-  <button type="button" id="closeFullImage">← Kembali</button>
-  <img id="fullImage" src="" alt="Gambar layar penuh">
-</div>
-            <p class="muted small">
-              Format JPG, PNG, WEBP, atau GIF. Maksimal 5 MB.
-            </p>
-          </div>
-
-          <!-- Isi catatan -->
-          <textarea
-            id="content"
-            placeholder="Tulis catatanmu di sini..."
-          ></textarea>
-
-          <!-- Pilihan favorit -->
-          <label class="row">
-            <input
-              id="favorite"
-              type="checkbox"
-              style="width:auto"
-            >
-            Jadikan favorit
-          </label>
-          
-<!-- Kunci catatan -->
-<label class="row">
-  <input
-    id="lockNote"
-    type="checkbox"
-    style="width:auto"
-  >
-  🔒 Kunci catatan dengan PIN
-</label>
-          
-<div id="pinArea" class="hidden">
-  <label for="notePin">PIN catatan (6 digit)</label>
-  <input
-    id="notePin"
-    type="password"
-    inputmode="numeric"
-    pattern="[0-9]{6}"
-    maxlength="6"
-    placeholder="Masukkan 6 digit PIN"
-    autocomplete="new-password"
-  >
-</div>
-          
-          <!-- Pilihan checklist -->
-          <label class="row">
-            <input
-              id="checklistMode"
-              type="checkbox"
-              style="width:auto"
-            >
-            Ini checklist tugas
-          </label>
-
-          <!-- Daftar tugas checklist -->
-          <div id="checklistArea" class="hidden">
-            <label for="checkItems">
-              Satu tugas per baris. Awali tugas selesai dengan [x].
-            </label>
-
-            <textarea
-              id="checkItems"
-              placeholder="Contoh:&#10;Belajar subnetting&#10;[x] Membaca materi DHCP"
-            ></textarea>
-          </div>
-
-          <!-- Tombol penyimpanan -->
-          <div class="row">
-            <button id="saveBtn">Simpan catatan</button>
-
-            <button
-              type="button"
-              class="secondary hidden"
-              id="cancelEdit"
-            >
-              Batal edit
-            </button>
-          </div>
-        </form>
-
-        <p class="muted small">
-          Catatan tersimpan saat kamu menekan tombol simpan.
-        </p>
-      </section>
-
-      <!-- =================================================
-           16. DAFTAR CATATAN DAN STATISTIK
-           ================================================= -->
-      <section class="card" id="notesPage">
-        <h2>📚 Semua catatan</h2>
-
-        <!-- Statistik -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <span class="stat-icon">📝</span>
-            <div class="stat-label">Total catatan</div>
-            <div class="stat-number" id="totalNotes">0</div>
-          </div>
-
-          <div class="stat-card">
-            <span class="stat-icon">⭐</span>
-            <div class="stat-label">Catatan favorit</div>
-            <div class="stat-number" id="totalFavorites">0</div>
-          </div>
-
-          <div class="stat-card">
-            <span class="stat-icon">✅</span>
-            <div class="stat-label">Tugas selesai</div>
-            <div class="stat-number" id="totalTasksDone">0</div>
-          </div>
-        </div>
-
-        <!-- Pencarian dan filter -->
-        <div class="stack">
-          <input
-            id="search"
-            placeholder="Cari judul atau isi catatan..."
-          >
-
-          <label class="row">
-            <input
-              id="onlyFavorites"
-              type="checkbox"
-              style="width:auto"
-            >
-            Tampilkan favorit saja
-          </label>
-        </div>
-
-        <!-- Tombol membuat catatan baru -->
-        <button type="button" id="newNoteBtn">
-          + Buat catatan
-        </button>
-
-        <!-- Jumlah catatan yang ditampilkan -->
-        <p id="count" class="muted"></p>
-
-        <!-- Catatan dibuat oleh JavaScript -->
-        <div id="notes"></div>
-      </section>
-    </main>
-  </div>
-
-  <!-- =====================================================
-       AKHIR HTML — BAGIAN JAVASCRIPT ADA DI BAGIAN 3
-       ===================================================== -->
-<script>
-(() => {
-  // ==========================================
-  // 1. KONFIGURASI SUPABASE
-  // ==========================================
-  const SUPABASE_URL = "https://jwuhtnzjhtcmblqxovgk.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
-
-  const $ = id => document.getElementById(id);
-  let messageTimer;
-async function makePinHash(pin, salt) {
-  const encoder = new TextEncoder();
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(pin),
-    "PBKDF2",
-    false,
-    ["deriveBits"]
-  );
-
-  const bits = await crypto.subtle.deriveBits(
-    {
-      name: "PBKDF2",
-      salt: Uint8Array.from(
-        atob(salt),
-        c => c.charCodeAt(0)
-      ),
-      iterations: 150000,
-      hash: "SHA-256"
-    },
-    key,
-    256
-  );
-
-  return btoa(
-    String.fromCharCode(...new Uint8Array(bits))
-  );
-}
-
-function makePinSalt() {
-  const bytes = crypto.getRandomValues(new Uint8Array(16));
-  return btoa(String.fromCharCode(...bytes));
-}
-
-async function verifyNotePin(note) {
-  if (!note.is_locked) return true;
-
-  const pin = prompt("Catatan terkunci. Masukkan PIN 6 digit:");
-
-  if (pin === null) return false;
-
-  if (!/^\d{6}$/.test(pin)) {
-    alert("PIN harus terdiri dari 6 digit angka.");
-    return false;
-  }
-
-  if (!note.pin_hash || !note.pin_salt) {
-    alert("PIN belum tersimpan. Catatan perlu disimpan ulang dengan PIN.");
-    return false;
-  }
-
-  const hash = await makePinHash(pin, note.pin_salt);
-
-  if (hash !== note.pin_hash) {
-    alert("PIN salah.");
-    return false;
-  }
-
-  return true;
-}
+‎<html lang="id">
+‎<head>
+‎  <meta charset="UTF-8">
+‎  <meta name="viewport" content="width=device-width, initial-scale=1">
+‎  <meta name="theme-color" content="#0f172a">
+‎  <title>CatatanKu</title>
+‎
+‎  <style>
+‎    :root {
+‎      --bg: #020617;
+‎      --panel: #0f172a;
+‎      --panel2: #1e293b;
+‎      --text: #f8fafc;
+‎      --muted: #94a3b8;
+‎      --accent: #818cf8;
+‎      --border: #334155;
+‎    }
+‎
+‎    * {
+‎      box-sizing: border-box;
+‎    }
+‎
+‎    body {
+‎      margin: 0;
+‎      min-height: 100vh;
+‎      padding: 18px;
+‎      background:
+‎        radial-gradient(circle at top left, #312e81, transparent 45%),
+‎        radial-gradient(circle at bottom right, #164e63, transparent 45%),
+‎        var(--bg);
+‎      color: var(--text);
+‎      font-family: Arial, sans-serif;
+‎    }
+‎
+‎    button, input, textarea {
+‎      font: inherit;
+‎    }
+‎
+‎    button {
+‎      cursor: pointer;
+‎    }
+‎
+‎    .container {
+‎      width: 100%;
+‎      max-width: 760px;
+‎      margin: 0 auto;
+‎    }
+‎
+‎    .header {
+‎      text-align: center;
+‎      margin: 20px 0 24px;
+‎    }
+‎
+‎    .header h1 {
+‎      margin: 0 0 8px;
+‎      font-size: 32px;
+‎    }
+‎
+‎    .header p {
+‎      margin: 0;
+‎      color: var(--muted);
+‎      line-height: 1.5;
+‎    }
+‎
+‎    .panel {
+‎      background: rgba(15, 23, 42, .94);
+‎      border: 1px solid var(--border);
+‎      border-radius: 18px;
+‎      padding: 18px;
+‎      margin-bottom: 18px;
+‎      box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+‎    }
+‎
+‎    .panel h2 {
+‎      margin-top: 0;
+‎      font-size: 20px;
+‎    }
+‎
+‎    .field {
+‎      margin-bottom: 14px;
+‎    }
+‎
+‎    label {
+‎      display: block;
+‎      margin-bottom: 7px;
+‎      font-size: 14px;
+‎      color: #cbd5e1;
+‎    }
+‎
+‎    input, textarea {
+‎      width: 100%;
+‎      border: 1px solid var(--border);
+‎      border-radius: 10px;
+‎      padding: 12px;
+‎      background: #020617;
+‎      color: var(--text);
+‎      outline: none;
+‎    }
+‎
+‎    input:focus, textarea:focus {
+‎      border-color: var(--accent);
+‎    }
+‎
+‎    textarea {
+‎      min-height: 130px;
+‎      resize: vertical;
+‎      line-height: 1.5;
+‎    }
+‎
+‎    input[type="checkbox"] {
+‎      width: auto;
+‎      margin-right: 7px;
+‎    }
+‎
+‎    .check-row {
+‎      display: flex;
+‎      align-items: center;
+‎      gap: 8px;
+‎      margin: 12px 0;
+‎      color: #e2e8f0;
+‎    }
+‎
+‎    .check-row label {
+‎      margin: 0;
+‎    }
+‎
+‎    .buttons {
+‎      display: flex;
+‎      flex-wrap: wrap;
+‎      gap: 9px;
+‎      margin-top: 14px;
+‎    }
+‎
+‎    .btn {
+‎      border: 0;
+‎      border-radius: 10px;
+‎      padding: 11px 14px;
+‎      background: var(--panel2);
+‎      color: var(--text);
+‎      font-weight: bold;
+‎    }
+‎
+‎    .btn-primary {
+‎      background: #6366f1;
+‎    }
+‎
+‎    .btn-danger {
+‎      background: #991b1b;
+‎    }
+‎
+‎    .btn-small {
+‎      padding: 8px 10px;
+‎      font-size: 13px;
+‎    }
+‎
+‎    .btn:disabled {
+‎      opacity: .55;
+‎      cursor: not-allowed;
+‎    }
+‎
+‎    .status {
+‎      padding: 11px;
+‎      margin: 12px 0;
+‎      border-radius: 10px;
+‎      background: #1e293b;
+‎      color: #e2e8f0;
+‎      overflow-wrap: anywhere;
+‎      white-space: pre-wrap;
+‎    }
+‎
+‎    .status.error {
+‎      background: #450a0a;
+‎      color: #fecaca;
+‎    }
+‎
+‎    .status.success {
+‎      background: #052e16;
+‎      color: #bbf7d0;
+‎    }
+‎
+‎    .hidden {
+‎      display: none !important;
+‎    }
+‎
+‎    .note {
+‎      border: 1px solid var(--border);
+‎      border-radius: 14px;
+‎      padding: 15px;
+‎      margin-bottom: 13px;
+‎      background: rgba(30, 41, 59, .8);
+‎      overflow-wrap: anywhere;
+‎    }
+‎
+‎    .note h3 {
+‎      margin: 0 0 9px;
+‎      font-size: 18px;
+‎    }
+‎
+‎    .note-content {
+‎      white-space: pre-wrap;
+‎      line-height: 1.6;
+‎      overflow-wrap: anywhere;
+‎    }
+‎
+‎    .note-meta {
+‎      color: var(--muted);
+‎      font-size: 12px;
+‎      margin-top: 12px;
+‎    }
+‎
+‎    .note-image {
+‎      display: block;
+‎      max-width: 100%;
+‎      max-height: 300px;
+‎      object-fit: contain;
+‎      margin-top: 12px;
+‎      border-radius: 10px;
+‎    }
+‎
+‎    .note-actions {
+‎      display: flex;
+‎      flex-wrap: wrap;
+‎      gap: 7px;
+‎      margin-top: 13px;
+‎    }
+‎
+‎    .muted {
+‎      color: var(--muted);
+‎    }
+‎
+‎    .creator {
+‎      text-align: center;
+‎      color: var(--muted);
+‎      font-size: 12px;
+‎      margin: 24px 0 8px;
+‎    }
+‎
+‎    .checklist-item {
+‎      display: flex;
+‎      align-items: flex-start;
+‎      gap: 9px;
+‎      margin: 10px 0;
+‎    }
+‎
+‎    .checklist-item input {
+‎      margin-top: 4px;
+‎      flex: 0 0 auto;
+‎    }
+‎
+‎    .checklist-item span {
+‎      flex: 1;
+‎      white-space: pre-wrap;
+‎      overflow-wrap: anywhere;
+‎    }
+‎
+‎    .checklist-item.done span {
+‎      text-decoration: line-through;
+‎      color: var(--muted);
+‎    }
+‎
+‎    @media (max-width: 480px) {
+‎      body {
+‎        padding: 12px;
+‎      }
+‎
+‎      .panel {
+‎        padding: 14px;
+‎      }
+‎
+‎      .header h1 {
+‎        font-size: 27px;
+‎      }
+‎
+‎      .buttons .btn {
+‎        flex: 1 1 auto;
+‎      }
+‎    }
+‎  </style>
+‎</head>
+‎
+‎<body>
+‎  <main class="container">
+‎    <header class="header">
+‎      <h1>📒 CatatanKu</h1>
+‎      <p>Simpan ide, catatan, dan daftar tugasmu.</p>
+‎    </header>
+‎
+‎    <section class="panel" id="authPanel">
+‎      <h2>🔐 Akun</h2>
+‎
+‎      <div class="field">
+‎        <label for="email">Email</label>
+‎        <input id="email" type="email"
+‎               autocomplete="email"
+‎               placeholder="Masukkan email">
+‎      </div>
+‎
+‎      <div class="field">
+‎        <label for="password">Password</label>
+‎        <input id="password" type="password"
+‎               autocomplete="current-password"
+‎               placeholder="Masukkan password">
+‎      </div>
+‎
+‎      <div class="buttons">
+‎        <button class="btn btn-primary" id="loginBtn" type="button">
+‎          Masuk
+‎        </button>
+‎        <button class="btn" id="registerBtn" type="button">
+‎          Daftar
+‎        </button>
+‎        <button class="btn" id="logoutBtn" type="button">
+‎          Keluar
+‎        </button>
+‎      </div>
+‎
+‎      <div id="authStatus" class="status">
+‎        Silakan masuk atau buat akun.
+‎      </div>
+‎    </section>
+‎
+‎    <section class="panel hidden" id="appPanel">
+‎      <h2 id="formTitle">✍️ Buat Catatan</h2>
+‎
+‎      <form id="noteForm">
+‎        <input id="noteId" type="hidden">
+‎
+‎        <div class="field">
+‎          <label for="noteTitle">Judul</label>
+‎          <input id="noteTitle" maxlength="150" required
+‎                 placeholder="Judul catatan">
+‎        </div>
+‎
+‎        <div class="field">
+‎          <label for="noteContent">Isi catatan</label>
+‎          <textarea id="noteContent"
+‎                    placeholder="Tulis catatanmu di sini..."></textarea>
+‎        </div>
+‎
+‎        <div class="check-row">
+‎          <input id="isFavorite" type="checkbox">
+‎          <label for="isFavorite">⭐ Tandai sebagai favorit</label>
+‎        </div>
+‎
+‎        <div class="check-row">
+‎          <input id="isChecklist" type="checkbox">
+‎          <label for="isChecklist">☑️ Gunakan daftar checklist</label>
+‎        </div>
+‎
+‎        <div class="field hidden" id="checklistField">
+‎          <label for="checklistItems">
+‎            Daftar tugas (satu tugas per baris)
+‎          </label>
+‎          <textarea id="checklistItems"
+‎                    placeholder="Belajar HTML&#10;Belajar CSS&#10;Latihan JavaScript"></textarea>
+‎        </div>
+‎
+‎        <div class="check-row">
+‎          <input id="isLocked" type="checkbox">
+‎          <label for="isLocked">🔒 Kunci catatan dengan PIN</label>
+‎        </div>
+‎
+‎        <div class="field hidden" id="pinField">
+‎          <label for="notePin">PIN enam digit</label>
+‎          <input id="notePin" type="password"
+‎                 inputmode="numeric" maxlength="6"
+‎                 pattern="[0-9]{6}"
+‎                 autocomplete="new-password"
+‎                 placeholder="Masukkan 6 digit PIN">
+‎          <p class="muted">
+‎            Saat mengedit catatan terkunci, kosongkan PIN untuk
+‎            mempertahankan PIN lama.
+‎          </p>
+‎        </div>
+‎
+‎        <div class="field">
+‎          <label for="noteImage">Lampiran gambar (opsional)</label>
+‎          <input id="noteImage" type="file" accept="image/*">
+‎        </div>
+‎
+‎        <div id="imagePreview"></div>
+‎
+‎        <div class="buttons">
+‎          <button class="btn btn-primary" id="saveBtn" type="submit">
+‎            Simpan Catatan
+‎          </button>
+‎          <button class="btn hidden" id="cancelEditBtn" type="button">
+‎            Batal Edit
+‎          </button>
+‎          <button class="btn" id="resetBtn" type="button">
+‎            Kosongkan
+‎          </button>
+‎        </div>
+‎
+‎        <div id="saveStatus" class="status hidden"></div>
+‎      </form>
+‎    </section>
+‎
+‎    <section class="panel hidden" id="notesPanel">
+‎      <h2>🗂️ Catatan Saya</h2>
+‎
+‎      <div class="field">
+‎        <label for="searchInput">Cari catatan</label>
+‎        <input id="searchInput" type="search"
+‎               placeholder="Cari judul atau isi...">
+‎      </div>
+‎
+‎      <div class="buttons">
+‎        <button class="btn" id="refreshBtn" type="button">
+‎          🔄 Muat Ulang
+‎        </button>
+‎        <button class="btn" id="themeBtn" type="button">
+‎          🌙 Ubah Tema
+‎        </button>
+‎      </div>
+‎
+‎      <div id="notesStatus" class="status">
+‎        Catatan akan muncul di sini.
+‎      </div>
+‎
+‎      <div id="notesList"></div>
+‎    </section>
+‎
+‎    <footer class="creator">
+‎      CatatanKu · Simpan ide, satu catatan setiap saat.
+‎    </footer>
+‎  </main>
+‎
+‎  <!-- Kode Bagian 2 ditempel setelah baris ini -->
+‎<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+‎<script>
+‎"use strict";
+‎
+‎/* =====================================
+‎   KONFIGURASI SUPABASE
+‎   ===================================== */
+‎
+‎const SUPABASE_URL = "https://jwuhtnzjhtcmblqxovgk.supabase.co";
+‎const SUPABASE_KEY = "sb_publishable_7-iurG5I_sMbasu1RfcluQ_dPwj-Nw0";
+‎
+‎const supabaseClient = window.supabase.createClient(
+‎  SUPABASE_URL,
+‎  SUPABASE_KEY
+‎);
+‎
+‎/* =====================================
+‎   VARIABEL APLIKASI
+‎   ===================================== */
+‎
+‎let currentUser = null;
+‎let notes = [];
+‎let editingNote = null;
+‎let currentImageUrl = "";
+‎let currentImagePreviewUrl = "";
+‎let unlockedNotes = new Set();
+‎
+‎/* =====================================
+‎   MEMBANTU MENGAMBIL ELEMEN HTML
+‎   ===================================== */
+‎
+‎const $ = (id) => document.getElementById(id);
+‎
+‎function showStatus(id, message, type = "") {
+‎  const element = $(id);
+‎  if (!element) return;
+‎
+‎  element.textContent = message;
+‎  element.classList.remove("hidden", "error", "success");
+‎
+‎  if (type) {
+‎    element.classList.add(type);
+‎  }
+‎}
+‎
+‎function hideStatus(id) {
+‎  const element = $(id);
+‎  if (element) {
+‎    element.classList.add("hidden");
+‎  }
+‎}
+‎
+‎function setButtonLoading(id, loading, loadingText = "Memproses...") {
+‎  const button = $(id);
+‎  if (!button) return;
+‎
+‎  if (loading) {
+‎    button.dataset.oldText = button.textContent;
+‎    button.textContent = loadingText;
+‎    button.disabled = true;
+‎  } else {
+‎    button.textContent = button.dataset.oldText || button.textContent;
+‎    button.disabled = false;
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   PENANGANAN ERROR
+‎   ===================================== */
+‎
+‎function getErrorMessage(error) {
+‎  console.error("Detail error CatatanKu:", error);
+‎
+‎  if (!error) {
+‎    return "Terjadi kesalahan yang tidak diketahui.";
+‎  }
+‎
+‎  if (typeof error === "string") {
+‎    return error;
+‎  }
+‎
+‎  if (error.message) {
+‎    return error.message;
+‎  }
+‎
+‎  if (error.error_description) {
+‎    return error.error_description;
+‎  }
+‎
+‎  if (error.details) {
+‎    return error.details;
+‎  }
+‎
+‎  if (error.hint) {
+‎    return error.hint;
+‎  }
+‎
+‎  if (error.code) {
+‎    return "Kode error: " + error.code;
+‎  }
+‎
+‎  try {
+‎    const result = JSON.stringify(error);
+‎    if (result && result !== "{}") {
+‎      return result;
+‎    }
+‎  } catch (e) {
+‎    console.error("Error tidak bisa diubah menjadi JSON:", e);
+‎  }
+‎
+‎  return "Terjadi kesalahan. Periksa koneksi dan Console browser.";
+‎}
+‎
+‎/* =====================================
+‎   FUNGSI TEKS AMAN
+‎   ===================================== */
+‎
+‎function escapeHTML(value) {
+‎  return String(value ?? "").replace(/[&<>"']/g, (char) => {
+‎    const entities = {
+‎      "&": "&amp;",
+‎      "<": "&lt;",
+‎      ">": "&gt;",
+‎      '"': "&quot;",
+‎      "'": "&#39;"
+‎    };
+‎
+‎    return entities[char];
+‎  });
+‎}
+‎
+‎function formatDate(value) {
+‎  if (!value) return "-";
+‎
+‎  const date = new Date(value);
+‎
+‎  if (Number.isNaN(date.getTime())) {
+‎    return "-";
+‎  }
+‎
+‎  return date.toLocaleString("id-ID", {
+‎    dateStyle: "medium",
+‎    timeStyle: "short"
+‎  });
+‎}
+‎
+‎/* =====================================
+‎   FUNGSI PIN ENAM DIGIT
+‎   ===================================== */
+‎
+‎function validatePin(pin) {
+‎  return /^[0-9]{6}$/.test(String(pin));
+‎}
+‎
+‎function randomSalt() {
+‎  const bytes = crypto.getRandomValues(new Uint8Array(16));
+‎
+‎  return Array.from(bytes)
+‎    .map(byte => byte.toString(16).padStart(2, "0"))
+‎    .join("");
+‎}
+‎
+‎async function hashPin(pin, salt) {
+‎  if (!crypto.subtle) {
+‎    throw new Error(
+‎      "Fitur keamanan PIN tidak tersedia. Buka situs melalui HTTPS."
+‎    );
+‎  }
+‎
+‎  const encoder = new TextEncoder();
+‎
+‎  const keyMaterial = await crypto.subtle.importKey(
+‎    "raw",
+‎    encoder.encode(pin),
+‎    "PBKDF2",
+‎    false,
+‎    ["deriveBits"]
+‎  );
+‎
+‎  const derivedBits = await crypto.subtle.deriveBits(
+‎    {
+‎      name: "PBKDF2",
+‎      salt: encoder.encode(salt),
+‎      iterations: 150000,
+‎      hash: "SHA-256"
+‎    },
+‎    keyMaterial,
+‎    256
+‎  );
+‎
+‎  return Array.from(new Uint8Array(derivedBits))
+‎    .map(byte => byte.toString(16).padStart(2, "0"))
+‎    .join("");
+‎}
+‎
+‎async function createPinData(pin) {
+‎  if (!validatePin(pin)) {
+‎    throw new Error("PIN harus terdiri dari tepat 6 angka.");
+‎  }
+‎
+‎  const salt = randomSalt();
+‎  const pinHash = await hashPin(pin, salt);
+‎
+‎  return {
+‎    pin_hash: pinHash,
+‎    pin_salt: salt
+‎  };
+‎}
+‎
+‎async function verifyPin(pin, note) {
+‎  if (!validatePin(pin)) {
+‎    return false;
+‎  }
+‎
+‎  if (!note || !note.pin_hash || !note.pin_salt) {
+‎    throw new Error(
+‎      "Data PIN tidak lengkap. Catatan perlu diperiksa kembali."
+‎    );
+‎  }
+‎
+‎  const enteredHash = await hashPin(pin, note.pin_salt);
+‎
+‎  return enteredHash === note.pin_hash;
+‎}
+‎
+‎/* =====================================
+‎   PEMBERSIHAN URL PREVIEW GAMBAR
+‎   ===================================== */
+‎
+‎function clearImagePreview() {
+‎  if (currentImagePreviewUrl) {
+‎    URL.revokeObjectURL(currentImagePreviewUrl);
+‎    currentImagePreviewUrl = "";
+‎  }
+‎
+‎  $("imagePreview").replaceChildren();
+‎}
+‎
+‎function previewSelectedImage(file) {
+‎  clearImagePreview();
+‎
+‎  if (!file) return;
+‎
+‎  if (!file.type.startsWith("image/")) {
+‎    showStatus("saveStatus", "File yang dipilih bukan gambar.", "error");
+‎    return;
+‎  }
+‎
+‎  currentImagePreviewUrl = URL.createObjectURL(file);
+‎
+‎  const image = document.createElement("img");
+‎  image.src = currentImagePreviewUrl;
+‎  image.alt = "Pratinjau gambar";
+‎  image.className = "note-image";
+‎
+‎  $("imagePreview").appendChild(image);
+‎}
+‎
+‎/* =====================================
+‎   KOMPRES GAMBAR
+‎   ===================================== */
+‎
+‎async function compressImage(file, maxSize = 1200, quality = 0.8) {
+‎  if (!file || !file.type.startsWith("image/")) {
+‎    throw new Error("Pilih file gambar yang valid.");
+‎  }
+‎
+‎  const temporaryUrl = URL.createObjectURL(file);
+‎
+‎  try {
+‎    const image = await new Promise((resolve, reject) => {
+‎      const img = new Image();
+‎
+‎      img.onload = () => resolve(img);
+‎
+‎      img.onerror = () => {
+‎        reject(new Error("Gagal membaca gambar. Coba gambar lain."));
+‎      };
+‎
+‎      img.src = temporaryUrl;
+‎    });
+‎
+‎    const scale = Math.min(
+‎      1,
+‎      maxSize / Math.max(image.width, image.height)
+‎    );
+‎
+‎    const canvas = document.createElement("canvas");
+‎    canvas.width = Math.max(1, Math.round(image.width * scale));
+‎    canvas.height = Math.max(1, Math.round(image.height * scale));
+‎
+‎    const context = canvas.getContext("2d");
+‎
+‎    if (!context) {
+‎      throw new Error("Browser tidak mendukung pemrosesan gambar.");
+‎    }
+‎
+‎    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+‎
+‎    const blob = await new Promise((resolve, reject) => {
+‎      canvas.toBlob(
+‎        result => {
+‎          if (result) {
+‎            resolve(result);
+‎          } else {
+‎            reject(new Error("Gagal memproses gambar."));
+‎          }
+‎        },
+‎        "image/jpeg",
+‎        quality
+‎      );
+‎    });
+‎
+‎    return blob;
+‎  } finally {
+‎    URL.revokeObjectURL(temporaryUrl);
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   AKHIR BAGIAN 2
+‎   KODE BAGIAN 3 DITEMPEL SETELAH INI
+‎   ===================================== */
+‎<script>
+‎/* =====================================
+‎   BAGIAN 3: AUTENTIKASI AKUN
+‎   ===================================== */
+‎
+‎/* Menampilkan panel sesuai status login */
+‎function updateAuthUI(user) {
+‎  currentUser = user || null;
+‎
+‎  $("authPanel").classList.remove("hidden");
+‎
+‎  if (currentUser) {
+‎    $("appPanel").classList.remove("hidden");
+‎    $("notesPanel").classList.remove("hidden");
+‎
+‎    $("authStatus").textContent =
+‎      "Login sebagai " + currentUser.email;
+‎
+‎    $("logoutBtn").classList.remove("hidden");
+‎  } else {
+‎    $("appPanel").classList.add("hidden");
+‎    $("notesPanel").classList.add("hidden");
+‎
+‎    $("authStatus").textContent =
+‎      "Silakan masuk atau buat akun.";
+‎
+‎    $("logoutBtn").classList.remove("hidden");
+‎
+‎    notes = [];
+‎    unlockedNotes.clear();
+‎    $("notesList").replaceChildren();
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   LOGIN
+‎   ===================================== */
+‎
+‎async function loginAccount() {
+‎  const email = $("email").value.trim();
+‎  const password = $("password").value;
+‎
+‎  if (!email || !password) {
+‎    showStatus(
+‎      "authStatus",
+‎      "Masukkan email dan password terlebih dahulu.",
+‎      "error"
+‎    );
+‎    return;
+‎  }
+‎
+‎  setButtonLoading("loginBtn", true, "Sedang masuk...");
+‎
+‎  try {
+‎    const { data, error } =
+‎      await supabaseClient.auth.signInWithPassword({
+‎        email,
+‎        password
+‎      });
+‎
+‎    if (error) throw error;
+‎
+‎    currentUser = data.user;
+‎
+‎    updateAuthUI(currentUser);
+‎
+‎    showStatus(
+‎      "authStatus",
+‎      "Berhasil masuk sebagai " + currentUser.email,
+‎      "success"
+‎    );
+‎
+‎    await loadNotes();
+‎  } catch (error) {
+‎    showStatus(
+‎      "authStatus",
+‎      "Gagal masuk: " + getErrorMessage(error),
+‎      "error"
+‎    );
+‎  } finally {
+‎    setButtonLoading("loginBtn", false);
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   DAFTAR AKUN
+‎   ===================================== */
+‎
+‎async function registerAccount() {
+‎  const email = $("email").value.trim();
+‎  const password = $("password").value;
+‎
+‎  if (!email || !password) {
+‎    showStatus(
+‎      "authStatus",
+‎      "Masukkan email dan password terlebih dahulu.",
+‎      "error"
+‎    );
+‎    return;
+‎  }
+‎
+‎  if (password.length < 6) {
+‎    showStatus(
+‎      "authStatus",
+‎      "Password minimal 6 karakter.",
+‎      "error"
+‎    );
+‎    return;
+‎  }
+‎
+‎  setButtonLoading("registerBtn", true, "Mendaftarkan...");
+‎
+‎  try {
+‎    const { data, error } =
+‎      await supabaseClient.auth.signUp({
+‎        email,
+‎        password
+‎      });
+‎
+‎    if (error) throw error;
+‎
+‎    if (data.session && data.user) {
+‎      currentUser = data.user;
+‎      updateAuthUI(currentUser);
+‎
+‎      showStatus(
+‎        "authStatus",
+‎        "Pendaftaran berhasil. Kamu sudah masuk.",
+‎        "success"
+‎      );
+‎
+‎      await loadNotes();
+‎    } else {
+‎      showStatus(
+‎        "authStatus",
+‎        "Pendaftaran berhasil. Periksa email untuk konfirmasi, " +
+‎        "kemudian masuk menggunakan akunmu.",
+‎        "success"
+‎      );
+‎    }
+‎  } catch (error) {
+‎    showStatus(
+‎      "authStatus",
+‎      "Gagal mendaftar: " + getErrorMessage(error),
+‎      "error"
+‎    );
+‎  } finally {
+‎    setButtonLoading("registerBtn", false);
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   LOGOUT
+‎   ===================================== */
+‎
+‎async function logoutAccount() {
+‎  try {
+‎    const { error } = await supabaseClient.auth.signOut();
+‎
+‎    if (error) throw error;
+‎
+‎    currentUser = null;
+‎    notes = [];
+‎    editingNote = null;
+‎    unlockedNotes.clear();
+‎
+‎    resetNoteForm();
+‎    updateAuthUI(null);
+‎
+‎    showStatus(
+‎      "authStatus",
+‎      "Kamu berhasil keluar dari akun.",
+‎      "success"
+‎    );
+‎  } catch (error) {
+‎    showStatus(
+‎      "authStatus",
+‎      "Gagal keluar: " + getErrorMessage(error),
+‎      "error"
+‎    );
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   MEMERIKSA SESI LOGIN SAAT HALAMAN DIBUKA
+‎   ===================================== */
+‎
+‎async function restoreLoginSession() {
+‎  try {
+‎    const { data, error } =
+‎      await supabaseClient.auth.getSession();
+‎
+‎    if (error) throw error;
+‎
+‎    const session = data.session;
+‎
+‎    if (session && session.user) {
+‎      currentUser = session.user;
+‎      updateAuthUI(currentUser);
+‎
+‎      await loadNotes();
+‎    } else {
+‎      updateAuthUI(null);
+‎    }
+‎  } catch (error) {
+‎    updateAuthUI(null);
+‎
+‎    showStatus(
+‎      "authStatus",
+‎      "Gagal memeriksa sesi: " + getErrorMessage(error),
+‎      "error"
+‎    );
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   EVENT TOMBOL AKUN
+‎   ===================================== */
+‎
+‎$("loginBtn").addEventListener("click", loginAccount);
+‎$("registerBtn").addEventListener("click", registerAccount);
+‎$("logoutBtn").addEventListener("click", logoutAccount);
+‎
+‎/* Enter pada kolom password untuk login */
+‎$("password").addEventListener("keydown", event => {
+‎  if (event.key === "Enter") {
+‎    event.preventDefault();
+‎    loginAccount();
+‎  }
+‎});
+‎
+‎/* =====================================
+‎   AKHIR BAGIAN 3
+‎   KODE BAGIAN 4 DITEMPEL SETELAH INI
+‎   ===================================== */
+‎</script>
+‎<script>
+‎/* =====================================
+‎   BAGIAN 4: MEMUAT CATATAN
+‎   ===================================== */
+‎
+‎/* Mengambil catatan milik akun yang sedang login */
+‎async function loadNotes() {
+‎  if (!currentUser) return;
+‎
+‎  showStatus("notesStatus", "Sedang memuat catatan...");
+‎
+‎  try {
+‎    const { data, error } = await supabaseClient
+‎      .from("notes")
+‎      .select("*")
+‎      .eq("user_id", currentUser.id)
+‎      .order("updated_at", { ascending: false });
+‎
+‎    if (error) throw error;
+‎
+‎    notes = data || [];
+‎
+‎    // Catatan yang dimuat ulang harus dikunci kembali.
+‎    unlockedNotes.clear();
+‎
+‎    renderNotes();
+‎
+‎    showStatus(
+‎      "notesStatus",
+‎      notes.length
+‎        ? "Berhasil memuat " + notes.length + " catatan."
+‎        : "Belum ada catatan. Kamu bisa membuat catatan pertama.",
+‎      "success"
+‎    );
+‎  } catch (error) {
+‎    showStatus(
+‎      "notesStatus",
+‎      "Gagal memuat catatan: " + getErrorMessage(error),
+‎      "error"
+‎    );
+‎  }
+‎}
+‎
+‎/* =====================================
+‎   MENAMPILKAN DAFTAR CATATAN
+‎   ===================================== */
+‎
+‎function renderNotes() {
+‎  const list = $("notesList");
+‎  list.replaceChildren();
+‎
+‎  const keyword = $("searchInput").value.trim().toLowerCase();
+‎
+‎  const filteredNotes = notes.filter(note => {
+‎    if (note.is_locked && !unlockedNotes.has(note.id)) {
+‎      return !keyword ||
+‎        String(note.title || "").toLowerCase().includes(keyword);
+‎    }
+‎
+‎    const title = String(note.title || "").toLowerCase();
+‎    const content = String(note.content || "").toLowerCase();
+‎
+‎    return !keyword ||
+‎      title.includes(keyword) ||
+‎      content.includes(keyword);
+‎  });
+‎
+‎  if (filteredNotes.length === 0) {
+‎    const empty = document.createElement("p");
+‎    empty.className = "muted";
+‎    empty.textContent = keyword
+‎      ? "Tidak ada catatan yang cocok dengan pencarian."
+‎      : "Belum ada catatan untuk ditampilkan.";
+‎
+‎    list.appendChild(empty);
+‎    return;
+‎  }
+‎
+‎  filteredNotes.forEach(note => {
+‎    const card = document.createElement("article");
+‎    card.className = "note";
+‎
+‎    const title = document.createElement("h3");
+‎    title.textContent =
+‎      (note.is_favorite ? "⭐ " : "") +
+‎      (note.is_locked ? "🔒 " : "") +
+‎      (note.title || "Tanpa judul");
+‎
+‎    card.appendChild(title);
+‎
+‎    const locked = note.is_locked &&
+‎      !unlockedNotes.has(note.id);
+‎
+‎    if (locked) {
+‎      const message = document.createElement("p");
+‎      message.className = "muted";
+‎      message.textContent =
+‎        "Catatan ini terkunci. Masukkan PIN untuk membacanya.";
+‎
+‎      card.appendChild(message);
+‎    } else {
+‎      if (note.is_checklist) {
+‎        const items = Array.isArray(note.checklist_items)
+‎          ? note.checklist_items
+‎          : [];
+‎
+‎        const checklist = document.createElement("div");
+‎
+‎        items.forEach((item, index) => {
+‎          const row = document.createElement("div");
+‎          row.className =
+‎            "checklist-item" + (item.done ? " done" : "");
+‎
+‎          const checkbox = document.createElement("input");
+‎          checkbox.type = "checkbox";
+‎          checkbox.checked = Boolean(item.done);
+‎          checkbox.dataset.action = "checklist";
+‎          checkbox.dataset.id = note.id;
+‎          checkbox.dataset.index = String(index);
+‎          checkbox.setAttribute(
+‎            "aria-label",
+‎            "Tandai tugas " + (index + 1) + " selesai"
+‎          );
+‎
+‎          const text = document.createElement("span");
+‎          text.textContent = item.text || "";
+‎
+‎          row.append(checkbox, text);
+‎          checklist.appendChild(row);
+‎        });
+‎
+‎        card.appendChild(checklist);
+‎      } else {
+‎        const content = document.createElement("p");
+‎        content.className = "note-content";
+‎        content.textContent = note.content || "";
+‎
+‎        card.appendChild(content);
+‎      }
+‎
+‎      if (note.image_url) {
+‎        const image = document.createElement("img");
+‎        image.className = "note-image";
+‎        image.src = note.image_url;
+‎        image.alt = "Lampiran catatan";
+‎        image.loading = "lazy";
+‎
+‎        image.onerror = () => {
+‎          image.alt = "Lampiran gambar tidak dapat dimuat";
+‎          image.classList.add("hidden");
+‎        };
+‎
+‎        card.appendChild(image);
+‎      }
+‎    }
+‎
+‎    const meta = document.createElement("div");
+‎    meta.className = "note-meta";
+‎    meta.textContent =
+‎      "Diperbarui: " + formatDate(note.updated_at);
+‎
+‎    card.appendChild(meta);
+‎
+‎    const actions = document.createElement("div");
+‎    actions.className = "note-actions";
+‎
+‎    const readButton = document.createElement("button");
+‎    readButton.className = "btn btn-small";
+‎    readButton.textContent = locked ? "🔓 Baca" : "👁️ Baca";
+‎    readButton.dataset.action = "read";
+‎    readButton.dataset.id = note.id;
+‎
+‎    const editButton = document.createElement("button");
+‎    editButton.className = "btn btn-small";
+‎    editButton.textContent = "✏️ Edit";
+‎    editButton.dataset.action = "edit";
+‎    editButton.dataset.id = note.id;
+‎
+‎    const favoriteButton = document.createElement("button");
+‎    favoriteButton.className = "btn btn-small";
+‎    favoriteButton.textContent = note.is_favorite
+‎      ? "★ Hapus Favorit"
+‎      : "☆ Favorit";
+‎    favoriteButton.dataset.action = "favorite";
+‎    favoriteButton.dataset.id = note.id;
+‎
+‎    const deleteButton = document.createElement("button");
+‎    deleteButton.className = "btn btn-small btn-danger";
+‎    deleteButton.textContent = "🗑️ Hapus";
+‎    deleteButton.dataset.action = "delete";
+‎    deleteButton.dataset.id = note.id;
+‎
+‎    actions.append(
+‎      readButton,
+‎      editButton,
+‎      favoriteButton,
+‎      deleteButton
+‎    );
+‎
+‎    card.appendChild(actions);
+‎    list.appendChild(card);
+‎  });
+‎}
+‎
+‎/* =====================================
+‎   AKHIR BAGIAN 4
+‎   KODE BAGIAN 5 DITEMPEL SETELAH INI
+‎   ===================================== */
+‎</script>
+‎<script>
+‎async function toggleFavorite(id) {
+‎  if (!currentUser) return;
+‎
+‎  const note = notes.find(item => String(item.id) === String(id));
+‎  if (!note) return;
+‎
+‎  const { error } = await supabaseClient
+‎    .from("notes")
+‎    .update({ is_favorite: !note.is_favorite })
+‎    .eq("id", id)
+‎    .eq("user_id", currentUser.id);
+‎
+‎  if (error) {
+‎    showMessage("Gagal mengubah favorit: " + error.message);
+‎    return;
+‎  }
+‎
+‎  await loadNotes();
+‎}
+‎
+‎async function deleteNote(id) {
+‎  if (!currentUser) return;
+‎
+‎  const confirmed = confirm(
+‎    "Yakin ingin menghapus catatan ini?"
+‎  );
+‎
+‎  if (!confirmed) return;
+‎
+‎  const { error } = await supabaseClient
+‎    .from("notes")
+‎    .delete()
+‎    .eq("id", id)
+‎    .eq("user_id", currentUser.id);
+‎
+‎  if (error) {
+‎    showMessage("Gagal menghapus: " + error.message);
+‎    return;
+‎  }
+‎
+‎  showMessage("Catatan berhasil dihapus.");
+‎  await loadNotes();
+‎}
+‎
+‎async function updateChecklist(id, items) {
+‎  if (!currentUser) return;
+‎
+‎  const { error } = await supabaseClient
+‎    .from("notes")
+‎    .update({
+‎      checklist_items: items,
+‎      updated_at: new Date().toISOString()
+‎    })
+‎    .eq("id", id)
+‎    .eq("user_id", currentUser.id);
+‎
+‎  if (error) {
+‎    showMessage("Gagal memperbarui checklist: " + error.message);
+‎    return;
+‎  }
+‎
+‎  await loadNotes();
+‎}
+‎</script>
+
+<script>  
+// ===============================  
+// PENCARIAN CATATAN  
+// ===============================  
+$("searchInput").addEventListener("input", () => {  
+  renderNotes();  
+});  
   
-  // ==========================================
-  // 2. PESAN NOTIFIKASI
-  // ==========================================
-
-function message(text, duration = 3000) {
-    const box = $("message");
-    if (!box) return;
-
-    clearTimeout(messageTimer);
-    box.textContent = text;
-    box.style.display = "block";
-    box.style.color = "#ffffff";
-
-    if (duration > 0) {
-      messageTimer = setTimeout(() => {
-        box.textContent = "";
-      }, duration);
-    }
-  }
-
-  // ==========================================
-  // 3. PEMERIKSAAN KONFIGURASI
-  // ==========================================
-  const configOK =
-    SUPABASE_URL.startsWith("https://") &&
-    (
-      SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_") ||
-      SUPABASE_PUBLISHABLE_KEY.startsWith("eyJ")
-    );
-
-  if (!window.supabase) {
-    message("Gagal memuat pustaka aplikasi. Periksa koneksi internet lalu muat ulang.");
-    return;
-  }
-
-  if (!configOK) {
-    message("Konfigurasi Supabase belum lengkap.");
-    return;
-  }
-  console.log("CatatanKu: pustaka Supabase berhasil dimuat");
-
-  const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-
-  let user = null;
-  let notes = [];
-  let editingId = null;
-  let isSignup = false;
-  let editingImageUrl = null;
-
-  // ==========================================
-  // 4. TEMA TERANG / GELAP
-  // ==========================================
-const themeBtn = $("themeBtn");
-const THEME_KEY = "catatanku-theme";
-
-function applyTheme(theme) {
-  const isDark =
-    theme === "dark" ||
-    (theme === "system" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-  document.body.classList.toggle("dark", isDark);
-
-  themeBtn.textContent = isDark ? "☀️ Tema" : "🌙 Tema";
-}
-
-let savedTheme = localStorage.getItem(THEME_KEY) || "system";
-
-applyTheme(savedTheme);
-
-themeBtn.onclick = () => {
-  const isDark = document.body.classList.contains("dark");
-
-  savedTheme = isDark ? "light" : "dark";
-
-  localStorage.setItem(THEME_KEY, savedTheme);
-  applyTheme(savedTheme);
-};
-
-  // ==========================================
-  // 5. LOGIN DAN PENDAFTARAN
-  // ==========================================
-  $("switchAuth").onclick = () => {
-    isSignup = !isSignup;
-
-    $("authTitle").textContent = isSignup
-      ? "Buat akun CatatanKu"
-      : "Masuk ke CatatanKu";
-
-    $("authSubmit").textContent = isSignup
-      ? "Daftar"
-      : "Login";
-
-    $("password").autocomplete = isSignup
-      ? "new-password"
-      : "current-password";
-
-    $("switchAuth").textContent = isSignup
-      ? "Sudah punya akun? Login"
-      : "Belum punya akun? Daftar";
-
-    message("");
-  };
-
-  $("authForm").onsubmit = async e => {
-    e.preventDefault();
-
-    const email = $("email").value.trim();
-    const password = $("password").value;
-
-    $("authSubmit").disabled = true;
-
-    try {
-      if (isSignup) {
-        const { data, error } = await db.auth.signUp({
-          email,
-          password
-        });
-
-        if (error) throw error;
-
-        if (!data.session) {
-          message("Pendaftaran berhasil. Periksa email untuk konfirmasi, lalu login.");
-        } else {
-          message("Akun berhasil dibuat.");
-        }
-      } else {
-        const { error } = await db.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (error) throw error;
-
-        message("Login berhasil.");
-      }
-    } catch (err) {
-      message("Gagal: " + err.message);
-    } finally {
-      $("authSubmit").disabled = false;
-    }
-  };
-
-  // ==========================================
-  // 6. LOGOUT
-  // ==========================================
-  $("logoutBtn").onclick = async () => {
-    const { error } = await db.auth.signOut();
-
-    if (error) {
-      message("Gagal logout: " + error.message);
-    }
-  };
-
-  // ==========================================
-  // 7. MODE CHECKLIST
-  // ==========================================
-  $("checklistMode").onchange = () => {
-    $("checklistArea").classList.toggle(
-      "hidden",
-      !$("checklistMode").checked
-    );
-  };
-
-  // ==========================================
-  // 8. KOMPRESI GAMBAR
-  // ==========================================
-  async function compressImage(file) {
-    if (
-      !["image/jpeg", "image/png", "image/webp"].includes(file.type)
-    ) {
-      return file;
-    }
-
-    const image = new Image();
-    const objectUrl = URL.createObjectURL(file);
-
-    try {
-      await new Promise((resolve, reject) => {
-        image.onload = resolve;
-      image.onerror = () => {
-  reject(new Error("Gagal membaca gambar. Coba pilih gambar lain."));
-};
-        image.src = objectUrl;
-      });
-
-      const maxSide = 1600;
-      const scale = Math.min(
-        1,
-        maxSide / Math.max(image.width, image.height)
-      );
-
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(image.width * scale);
-      canvas.height = Math.round(image.height * scale);
-
-      const context = canvas.getContext("2d");
-      context.drawImage(
-        image,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      const blob = await new Promise(resolve =>
-        canvas.toBlob(resolve, "image/jpeg", 0.78)
-      );
-
-      if (!blob || blob.size >= file.size) {
-        return file;
-      }
-
-      return new File(
-        [blob],
-        file.name.replace(/\.[^.]+$/, "") + ".jpg",
-        { type: "image/jpeg" }
-      );
-    } finally {
-      URL.revokeObjectURL(objectUrl);
-    }
-  }
-
-  // ==========================================
-  // 9. NAVIGASI HALAMAN CATATAN
-  // ==========================================
-  function resetForm() {
-    editingId = null;
-    editingImageUrl = null;
-
-    $("noteForm").reset();
-    $("formTitle").textContent = "✍️ Buat catatan";
-    $("saveBtn").textContent = "Simpan catatan";
-    $("cancelEdit").classList.add("hidden");
-    $("checklistArea").classList.add("hidden");
-  }
-
-  function showNotesPage() {
-    $("editorPage").classList.add("hidden");
-    $("notesPage").classList.remove("hidden");
-  }
-
-  function openEditor() {
-    resetForm();
-
-    $("notesPage").classList.add("hidden");
-    $("editorPage").classList.remove("hidden");
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
-
-  $("newNoteBtn").onclick = openEditor;
-
-  $("backBtn").onclick = () => {
-    resetForm();
-    showNotesPage();
-  };
-
-  $("cancelEdit").onclick = () => {
-    resetForm();
-    showNotesPage();
-  };
-
-  // ==========================================
-  // 10. SIMPAN CATATAN DAN UNGGAH GAMBAR
-  // ==========================================
+// ===============================  
+// MUAT ULANG CATATAN  
+// ===============================  
+$("refreshBtn").addEventListener("click", async () => {  
+  await loadNotes();  
+});  
   
-$("lockNote").addEventListener("change", () => {
-  $("pinArea").classList.toggle(
-    "hidden",
-    !$("lockNote").checked
-  );
-
-  if (!$("lockNote").checked) {
-    $("notePin").value = "";
-  }
-});
+// ===============================  
+// GANTI TEMA  
+// ===============================  
+let lightThemeEnabled = false;  
   
-  $("noteForm").onsubmit = async e => {
-    e.preventDefault();
-
-    if (!user) {
-      message("Silakan login terlebih dahulu.");
-      return;
-    }
-
-    const imageFile = $("noteImage").files[0];
-
-    if (imageFile) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "image/gif"
-      ];
-
-      if (!allowedTypes.includes(imageFile.type)) {
-        message("Format gambar harus JPG, PNG, WEBP, atau GIF.");
-        return;
-      }
-
-      if (imageFile.size > 5 * 1024 * 1024) {
-        message("Ukuran gambar maksimal 5 MB.");
-        return;
-      }
-    }
-
-    const checklist = $("checklistMode").checked;
-
-    const checklistItems = checklist
-      ? $("checkItems").value
-          .split("\n")
-          .map(line => ({
-            text: line.replace(/^\[x\]\s*/i, "").trim(),
-            done: /^\[x\]\s*/i.test(line)
-          }))
-          .filter(item => item.text)
-      : [];
-
-    $("saveBtn").disabled = true;
-
-    try {
-      let imageUrl = editingImageUrl;
-
-      if (imageFile) {
-        message("⏳ Sedang mengompres foto...", 0);
-
-        const uploadFile = await compressImage(imageFile);
-
-        message("⏳ Foto siap, sedang mengunggah...", 0);
-
-        const safeName = uploadFile.name.replace(
-          /[^a-zA-Z0-9._-]/g,
-          "_"
-        );
-
-        const imagePath =
-          `${user.id}/${Date.now()}-${safeName}`;
-
-        const {
-          data: uploadData,
-          error: uploadError
-        } = await db.storage
-          .from("catatan-gambat")
-          .upload(imagePath, uploadFile, {
-            contentType: uploadFile.type,
-            upsert: false
-          });
-
-        if (uploadError) {
-          throw new Error(
-            "Gagal mengunggah gambar: " + uploadError.message
-          );
-        }
-        console.log("Path foto berhasil diunggah:", uploadData?.path);
-
-        const { data: signedData, error: signedError } =
-  await db.storage
-    .from("catatan-gambat")
-.createSignedUrl(imagePath, 60 * 60);
-
-if (signedError) {
-  throw new Error("Gagal membuat URL foto: " + signedError.message);
-}
-
-imageUrl = signedData.signedUrl;
-      }
-
-      const record = {
-        title: $("noteTitle").value.trim(),
-        content: $("content").value,
-        image_url: imageUrl,
-        is_favorite: $("favorite").checked,
-        is_checklist: checklist,
-        checklist_items: checklistItems,
-        updated_at: new Date().toISOString()
-      };
-
-      let result;
-
-      if (editingId) {
-        result = await db
-          .from("notes")
-          .update(record)
-          .eq("id", editingId)
-          .eq("user_id", user.id);
-      } else {
-        result = await db
-          .from("notes")
-          .insert({
-            ...record,
-            user_id: user.id
-          });
-      }
-
-      if (result.error) throw result.error;
-
-      message("✅ Catatan dan lampiran berhasil disimpan.");
-
-      resetForm();
-      showNotesPage();
-
-      await loadNotes();
-
-} catch (err) {
-  console.error("Detail gagal menyimpan:", err);
-
-  let errorText = "Kesalahan tidak diketahui";
-
-  if (err instanceof Error) {
-    errorText = err.message;
-  } else if (typeof err === "string") {
-    errorText = err;
-  } else if (err && typeof err === "object") {
-    errorText =
-      err.message ||
-      err.error_description ||
-      err.details ||
-      err.hint ||
-      err.code ||
-      JSON.stringify(err);
-  }
-
-  message("Gagal menyimpan: " + errorText);
-} finally {
-  $("saveBtn").disabled = false;
-}
-  };
-
-  // ==========================================
-  // 11. TAMPILKAN CATATAN
-  // ==========================================
-function openReadView(n) {
-  $("readTitle").textContent = n.title || "Tanpa judul";
-  $("readCategory").textContent =
-    "Kategori: " + (n.category || "Umum");
-
-  $("readDate").textContent = new Date(
-    n.updated_at || n.created_at
-  ).toLocaleString("id-ID");
-
-  const content = $("readContent");
-  content.replaceChildren();
-
-  if (n.is_checklist && Array.isArray(n.checklist_items)) {
-    for (const item of n.checklist_items) {
-      const line = document.createElement("p");
-      line.textContent =
-        (item.done ? "☑ " : "☐ ") + item.text;
-      content.append(line);
-    }
-  } else {
-    const text = document.createElement("p");
-    text.style.whiteSpace = "pre-wrap";
-    text.textContent = n.content || "";
-    content.append(text);
-  }
-
-  const img = $("readImage");
-
-  if (n.image_url) {
-    img.src = n.image_url;
-    img.classList.remove("hidden");
-  } else {
-    img.src = "";
-    img.classList.add("hidden");
-  }
-
-$("notesPage").classList.add("hidden");
-$("editorPage").classList.add("hidden");
-$("readView").classList.remove("hidden");
-
-document.body.classList.add("read-mode");
-document.body.classList.remove("edit-mode");
-
-window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  $("backToNotes").addEventListener("click", () => {
-    $("readView").classList.add("hidden");
-    $("notesPage").classList.remove("hidden");
-  });
-});
-
-  function renderNotes() {
-    const query = $("search").value.toLowerCase().trim();
-    const fav = $("onlyFavorites").checked;
-
-    const shown = notes.filter(n =>
-      (
-        !query ||
-        ((n.title || "") + " " + (n.content || ""))
-          .toLowerCase()
-          .includes(query)
-      ) &&
-      (!fav || n.is_favorite)
-    );
-
-    $("count").textContent = `${shown.length} catatan`;
-    $("totalNotes").textContent = notes.length;
-
-    $("totalFavorites").textContent =
-      notes.filter(n => n.is_favorite).length;
-
-    $("totalTasksDone").textContent = notes.reduce(
-      (total, n) => {
-        if (
-          !n.is_checklist ||
-          !Array.isArray(n.checklist_items)
-        ) {
-          return total;
-        }
-
-        return total +
-          n.checklist_items.filter(item => item.done).length;
-      },
-      0
-    );
-
-    $("notes").replaceChildren();
-
-    if (!shown.length) {
-      $("notes").textContent = "Belum ada catatan yang cocok.";
-      return;
-    }
-
-    for (const n of shown) {
-      const box = document.createElement("article");
-      box.className = "note";
-
-      const title = document.createElement("h3");
-      title.textContent =
-        (n.is_favorite ? "⭐ " : "") + n.title;
-
-      const categoryTag = document.createElement("span");
-      categoryTag.className = "category-tag";
-      categoryTag.textContent = n.category || "Umum";
-
-      const meta = document.createElement("p");
-      meta.className = "muted small";
-      meta.textContent = new Date(
-        n.updated_at || n.created_at
-      ).toLocaleString("id-ID");
-
-      box.append(title, categoryTag, meta);
-
-      // Isi checklist atau teks biasa
-      if (
-        n.is_checklist &&
-        Array.isArray(n.checklist_items)
-      ) {
-        for (const item of n.checklist_items) {
-          const line = document.createElement("label");
-          line.className = "row task-line";
-
-          const span = document.createElement("span");
-          span.textContent = item.text;
-
-          const cb = document.createElement("input");
-          cb.className = "task-checkbox";
-          cb.type = "checkbox";
-          cb.checked = !!item.done;
-          cb.style.width = "28px";
-          cb.style.height = "28px";
-
-          cb.onchange = () =>
-            updateChecklist(n, item.text, cb.checked);
-
-          line.append(span, cb);
-          box.append(line);
-        }
-      } else {
-        const body = document.createElement("pre");
-        body.textContent = n.content || "";
-        box.append(body);
-      }
-
-      // Tombol tindakan
-      const actions = document.createElement("div");
-      actions.className = "row";
-      
-const read = document.createElement("button");
-read.textContent = "Baca";
-read.className = "secondary";
-read.onclick = async () => {
-  try {
-    if (await verifyNotePin(n)) {
-      openReadView(n);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Gagal memeriksa PIN.");
-  }
-};
-
-      const edit = document.createElement("button");
-      edit.textContent = "Edit";
-      edit.onclick = () => editNote(n);
-
-      const favorite = document.createElement("button");
-      favorite.className = "secondary";
-      favorite.textContent = n.is_favorite
-        ? "Hapus favorit"
-        : "favorit";
-      favorite.onclick = () => toggleFavorite(n);
-
-      const del = document.createElement("button");
-      del.className = "danger";
-      del.textContent = "Hapus";
-      del.onclick = () => deleteNote(n);
-
-      actions.append(read, edit, favorite, del);
-      box.append(actions);
-
-      $("notes").append(box);
-    }
-  }
-
-  // ==========================================
-  // 12. MUAT DATA CATATAN DARI SUPABASE
-  // ==========================================
-  async function loadNotes() {
-    const { data, error } = await db
-      .from("notes")
-      .select("*")
-      .order("updated_at", { ascending: false });
-
-    if (error) {
-      message("Gagal memuat catatan: " + error.message);
-      return;
-    }
-
-    notes = data || [];
-    renderNotes();
-  }
-
-  // ==========================================
-  // 13. EDIT CATATAN
-  // ==========================================
-  function editNote(n) {
-    editingId = n.id;
-    editingImageUrl = n.image_url || null;
-    const previewBox = $("imagePreviewBox");
-const previewImage = $("imagePreview");
-
-if (n.image_url) {
-  previewImage.src = n.image_url;
-  previewBox.classList.remove("hidden");
-} else {
-  previewImage.src = "";
-  previewBox.classList.add("hidden");
-}
-
-    $("noteTitle").value = n.title || "";
-    $("content").value = n.content || "";
-    $("favorite").checked = !!n.is_favorite;
-    $("checklistMode").checked = !!n.is_checklist;
-
-    $("checklistArea").classList.toggle(
-      "hidden",
-      !n.is_checklist
-    );
-
-    $("checkItems").value = (n.checklist_items || [])
-      .map(i => (i.done ? "[x] " : "") + i.text)
-      .join("\n");
-
-    $("formTitle").textContent = "✏️ Edit catatan";
-    $("saveBtn").textContent = "Simpan perubahan";
-    $("cancelEdit").classList.remove("hidden");
-
-    
-$("notesPage").classList.add("hidden");
-$("readView").classList.add("hidden");
-$("editorPage").classList.remove("hidden");
-
-document.body.classList.add("edit-mode");
-document.body.classList.remove("read-mode");
-
-
-window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-$("removeImageBtn").addEventListener("click", () => {
-  editingImageUrl = null;
-
-  $("imagePreview").src = "";
-  $("imagePreviewBox").classList.add("hidden");
-  $("noteImage").value = "";
-});
-  // ==========================================
-  // 14. PERBARUI CHECKLIST
-  // ==========================================
-  async function updateChecklist(n, text, done) {
-    const items = (n.checklist_items || []).map(i =>
-      i.text === text ? { ...i, done } : i
-    );
-
-    const { error } = await db
-      .from("notes")
-      .update({
-        checklist_items: items,
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", n.id)
-      .eq("user_id", user.id);
-
-    if (error) {
-      message("Gagal memperbarui checklist: " + error.message);
-    } else {
-      await loadNotes();
-    }
-  }
-
-  // ==========================================
-  // 15. FAVORIT
-  // ==========================================
-  async function toggleFavorite(n) {
-    const { error } = await db
-      .from("notes")
-      .update({
-        is_favorite: !n.is_favorite,
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", n.id)
-      .eq("user_id", user.id);
-
-    if (error) {
-      message("Gagal memperbarui favorit: " + error.message);
-    } else {
-      await loadNotes();
-    }
-  }
-
-  // ==========================================
-  // 16. HAPUS CATATAN
-  // ==========================================
-  async function deleteNote(n) {
-    if (!confirm(
-      "Hapus catatan ini? Tindakan ini tidak bisa dibatalkan."
-    )) {
-      return;
-    }
-
-    const { error } = await db
-      .from("notes")
-      .delete()
-      .eq("id", n.id)
-      .eq("user_id", user.id);
-
-    if (error) {
-      message("Gagal menghapus: " + error.message);
-    } else {
-      message("Catatan dihapus.");
-      await loadNotes();
-    }
-  }
-
-  // ==========================================
-  // 17. PENCARIAN DAN FILTER
-  // ==========================================
-  $("search").oninput = renderNotes;
-  $("onlyFavorites").onchange = renderNotes;
-
-  // ==========================================
-  // 18. STATUS LOGIN DAN APLIKASI
-  // ==========================================
-  function showApp(sessionUser) {
-    user = sessionUser || null;
-
-    $("auth").style.display = user ? "none" : "block";
-    $("app").style.display = user ? "block" : "none";
-
-    $("userEmail").textContent = user ? user.email : "";
-
-    if (user) {
-      loadNotes();
-    } else {
-      notes = [];
-      $("notes").replaceChildren();
-      resetForm();
-    }
-  }
-
-  // ==========================================
-  // 19. CEK SESI SUPABASE
-  // ==========================================
-  db.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-      showApp(session?.user || null);
-    }
-
-    if (event === "SIGNED_OUT") {
-      showApp(null);
-    }
-  });
-
-  db.auth.getSession().then(({ data, error }) => {
-    if (error) {
-      message("Gagal memeriksa sesi login: " + error.message);
-      return;
-    }
-
-    showApp(data.session?.user || null);
-  }).catch(error => {
-    message("Gagal memuat sesi: " + error.message);
-  });
-})();
-</script>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js")
-        .then(() => console.log("CatatanKu siap digunakan"))
-        .catch((error) => console.error("Service worker gagal:", error));
-    });
-  }
+function applyTheme() {  
+  const root = document.documentElement;  
   
-</script>
-
-<script>
-  const welcomePopup = document.getElementById("welcomePopup");
-  const closeWelcome = document.getElementById("closeWelcome");
-
-  closeWelcome.addEventListener("click", () => {
-    welcomePopup.style.display = "none";
-  });
-  const previewImage = document.getElementById("imagePreview");
-const fullImageViewer = document.getElementById("fullImageViewer");
-const fullImage = document.getElementById("fullImage");
-const closeFullImage = document.getElementById("closeFullImage");
-
-previewImage.style.cursor = "zoom-in";
-
-previewImage.addEventListener("click", () => {
-  if (!previewImage.src) return;
-
-  fullImage.src = previewImage.src;
-  fullImageViewer.classList.remove("hidden");
-});
-
-closeFullImage.addEventListener("click", () => {
-  fullImageViewer.classList.add("hidden");
-  fullImage.src = "";
-});
-</script>
-
-<div id="readView" class="hidden">
-  <button type="button" id="backToNotes">← Kembali</button>
-  <h2 id="readTitle"></h2>
-  <p id="readCategory" class="muted"></p>
-  <p id="readDate" class="muted small"></p>
-  <div id="readContent"></div>
-  <img
-    id="readImage"
-    class="hidden"
-    alt="Gambar catatan"
-    style="max-width:100%; max-height:70vh; object-fit:contain; border-radius:12px;"
-  >
-</div>
+  if (lightThemeEnabled) {  
+    root.style.setProperty("--bg", "#f1f5f9");  
+    root.style.setProperty("--panel", "#ffffff");  
+    root.style.setProperty("--panel2", "#e2e8f0");  
+    root.style.setProperty("--text", "#0f172a");  
+    root.style.setProperty("--muted", "#475569");  
+    root.style.setProperty("--border", "#cbd5e1");  
   
-</body>
-</html>
+    document.body.style.background = "#f1f5f9";  
+  } else {  
+    root.style.setProperty("--bg", "#020617");  
+    root.style.setProperty("--panel", "#0f172a");  
+    root.style.setProperty("--panel2", "#1e293b");  
+    root.style.setProperty("--text", "#f8fafc");  
+    root.style.setProperty("--muted", "#94a3b8");  
+    root.style.setProperty("--border", "#334155");  
+  
+    document.body.style.background = "";  
+  }  
+}  
+  
+$("themeBtn").addEventListener("click", () => {  
+  lightThemeEnabled = !lightThemeEnabled;  
+  applyTheme();  
+  
+  $("themeBtn").textContent = lightThemeEnabled  
+    ? "Tema Gelap"  
+    : "Tema Terang";  
+});  
+  
+// ===============================  
+// PERUBAHAN STATUS LOGIN  
+// ===============================  
+supabaseClient.auth.onAuthStateChange((_event, session) => {  
+  const newUser = session?.user || null;  
+  const oldUserId = currentUser?.id || null;  
+  const newUserId = newUser?.id || null;  
+  
+  currentUser = newUser;  
+  
+  if (oldUserId !== newUserId) {  
+    updateAuthUI(newUser);  
+  
+    if (newUser) {  
+      loadNotes();  
+    } else {  
+      notes = [];  
+      renderNotes();  
+    }  
+  }  
+});  
+  
+// ===============================  
+// INISIALISASI APLIKASI  
+// ===============================  
+applyTheme();  
+updateAuthUI(null);  
+restoreLoginSession();  
+</script>  </body>  
+</html>  
+‎
