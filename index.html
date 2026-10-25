@@ -1819,7 +1819,26 @@ imageUrl = signedData.signedUrl;
 
       await loadNotes();
 } catch (err) {
-  console.error("Detail gagal menyimpan:", err);   
+  console.error("Detail gagal menyimpan:", err);
+
+  let errorText = "Kesalahan tidak diketahui";
+
+  if (err instanceof Error) {
+    errorText = err.message;
+  } else if (typeof err === "string") {
+    errorText = err;
+  } else if (err && typeof err === "object") {
+    errorText = [
+      err.message,
+      err.error,
+      err.details,
+      err.hint,
+      err.code
+    ].filter(Boolean).join(" | ") || JSON.stringify(err);
+  }
+
+  message("Gagal menyimpan: " + errorText);
+} finally {
   console.error("Semua properti error:", Object.getOwnPropertyNames(err || {}));
   console.error("Isi error lengkap:", JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
   console.error("Nama error:", err?.name);
