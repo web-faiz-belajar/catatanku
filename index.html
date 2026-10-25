@@ -1819,6 +1819,7 @@ imageUrl = signedData.signedUrl;
       showNotesPage();
 
       await loadNotes();
+
 } catch (err) {
   console.error("Detail gagal menyimpan:", err);
 
@@ -1829,19 +1830,19 @@ imageUrl = signedData.signedUrl;
   } else if (typeof err === "string") {
     errorText = err;
   } else if (err && typeof err === "object") {
-    errorText = [
-      err.message,
-      err.error,
-      err.details,
-      err.hint,
-      err.code
-    ].filter(Boolean).join(" | ") || String(err);
+    errorText =
+      err.message ||
+      err.error_description ||
+      err.details ||
+      err.hint ||
+      err.code ||
+      JSON.stringify(err);
   }
 
   message("Gagal menyimpan: " + errorText);
 } finally {
   $("saveBtn").disabled = false;
-    }
+}
   };
 
   // ==========================================
