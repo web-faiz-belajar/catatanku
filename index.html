@@ -1818,11 +1818,16 @@ imageUrl = signedData.signedUrl;
       showNotesPage();
 
       await loadNotes();
-    } catch (err) {
+} catch (err) {
   console.error("Detail gagal menyimpan:", err);
+  console.error("Nama error:", err?.name);
+  console.error("Pesan error:", err?.message);
+  console.error("Detail error:", err?.details);
+  console.error("Penyebab error:", err?.cause);
+
   message(
     "Gagal menyimpan: " +
-    (err?.message || err?.error_description || JSON.stringify(err) || String(err))
+    (err?.message || String(err))
   );
 } finally {
       $("saveBtn").disabled = false;
