@@ -1834,24 +1834,12 @@ imageUrl = signedData.signedUrl;
       err.details,
       err.hint,
       err.code
-    ].filter(Boolean).join(" | ") || JSON.stringify(err);
+    ].filter(Boolean).join(" | ") || String(err);
   }
 
   message("Gagal menyimpan: " + errorText);
 } finally {
-  console.error("Semua properti error:", Object.getOwnPropertyNames(err || {}));
-  console.error("Isi error lengkap:", JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
-  console.error("Nama error:", err?.name);
-  console.error("Pesan error:", err?.message);
-  console.error("Detail error:", err?.details);
-  console.error("Penyebab error:", err?.cause);
-
-  message(
-    "Gagal menyimpan: " +
-    (err?.message || String(err))
-  );
-} finally {
-      $("saveBtn").disabled = false;
+  $("saveBtn").disabled = false;
     }
   };
 
