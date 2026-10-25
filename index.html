@@ -1735,10 +1735,16 @@ themeBtn.onclick = () => {
           );
         }
 
-        const { data: publicData } = db.storage
-          .from("catatan-gambat")
-          .getPublicUrl(uploadData.path);
+        const { data: signedData, error: signedError } =
+  await db.storage
+    .from("catatan-gambat")
+    .createSignedUrl(uploadData.path, 60 * 60);
 
+if (signedError) {
+  throw new Error("Gagal membuat URL foto: " + signedError.message);
+}
+
+imageUrl = signedData.signedUrl;
         imageUrl = publicData.publicUrl;
       }
 
