@@ -1819,7 +1819,9 @@ imageUrl = signedData.signedUrl;
 
       await loadNotes();
 } catch (err) {
-  console.error("Detail gagal menyimpan:", err);
+  console.error("Detail gagal menyimpan:", err);   
+  console.error("Semua properti error:", Object.getOwnPropertyNames(err || {}));
+  console.error("Isi error lengkap:", JSON.stringify(err, Object.getOwnPropertyNames(err || {})));
   console.error("Nama error:", err?.name);
   console.error("Pesan error:", err?.message);
   console.error("Detail error:", err?.details);
