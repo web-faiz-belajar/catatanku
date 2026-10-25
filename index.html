@@ -1451,6 +1451,7 @@ function message(text, duration = 3000) {
     message("Konfigurasi Supabase belum lengkap.");
     return;
   }
+  console.log("CatatanKu: pustaka Supabase berhasil dimuat");
 
   const db = window.supabase.createClient(
     SUPABASE_URL,
