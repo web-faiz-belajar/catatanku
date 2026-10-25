@@ -883,6 +883,121 @@ body.read-mode .wrap > header.top,
 body.edit-mode .wrap > header.top {
   display: none !important;
 }
+    
+/* ===== Kartu kaca buram fitur Baca ===== */
+#readView {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 18px 14px 32px;
+  color: #eaf5ff;
+}
+
+/* Kartu judul dan metadata */
+#readView #readTitle,
+#readView #readCategory,
+#readView #readDate {
+  box-sizing: border-box;
+  padding: 16px 18px;
+  margin: 12px 0 0;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(190, 225, 255, 0.20);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Kartu judul */
+#readView #readTitle {
+  margin-top: 18px;
+  border-radius: 22px 22px 12px 12px;
+  color: #f2f9ff;
+  font-size: 24px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+/* Kartu kategori dan tanggal */
+#readView #readCategory {
+  margin-top: 10px;
+  border-radius: 14px;
+  color: #b6cce3;
+}
+
+#readView #readDate {
+  margin-top: 10px;
+  border-radius: 14px;
+  color: #b6cce3;
+}
+
+/* Kartu isi catatan terpisah */
+#readView #readContent {
+  box-sizing: border-box;
+  min-width: 0;
+  margin-top: 16px;
+  padding: 20px 18px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(190, 225, 255, 0.20);
+  border-radius: 22px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow-wrap: anywhere;
+}
+
+#readView #readContent p {
+  margin: 0;
+  color: #eaf5ff;
+  font-size: 16px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Kartu gambar */
+#readView #readImage:not(.hidden) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  margin-top: 16px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(190, 225, 255, 0.20);
+  border-radius: 22px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Tombol kembali */
+#readView #backToNotes {
+  margin-bottom: 4px;
+}
+
+/* Tema terang */
+body:not(.dark) #readView #readTitle,
+body:not(.dark) #readView #readCategory,
+body:not(.dark) #readView #readDate,
+body:not(.dark) #readView #readContent,
+body:not(.dark) #readView #readImage:not(.hidden) {
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(80, 140, 210, 0.24);
+  box-shadow: 0 12px 35px rgba(30, 80, 140, 0.10);
+}
+
+body:not(.dark) #readView #readTitle,
+body:not(.dark) #readView #readContent p {
+  color: #173452;
+}
+
+body:not(.dark) #readView #readCategory,
+body:not(.dark) #readView #readDate {
+  color: #526b86;
+    }
 
   </style>
 </head>
