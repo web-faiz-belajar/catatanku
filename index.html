@@ -1847,7 +1847,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderNotes() {
     const query = $("search").value.toLowerCase().trim();
-    const category = $("filterCategory").value;
     const fav = $("onlyFavorites").checked;
 
     const shown = notes.filter(n =>
@@ -1857,7 +1856,6 @@ document.addEventListener("DOMContentLoaded", () => {
           .toLowerCase()
           .includes(query)
       ) &&
-      (!category || n.category === category) &&
       (!fav || n.is_favorite)
     );
 
@@ -2116,7 +2114,6 @@ $("removeImageBtn").addEventListener("click", () => {
   // 17. PENCARIAN DAN FILTER
   // ==========================================
   $("search").oninput = renderNotes;
-  $("filterCategory").onchange = renderNotes;
   $("onlyFavorites").onchange = renderNotes;
 
   // ==========================================
