@@ -1273,7 +1273,30 @@ body:not(.dark) #readView #readDate {
             >
             Jadikan favorit
           </label>
-
+          
+<!-- Kunci catatan -->
+<label class="row">
+  <input
+    id="lockNote"
+    type="checkbox"
+    style="width:auto"
+  >
+  🔒 Kunci catatan dengan PIN
+</label>
+          
+<div id="pinArea" class="hidden">
+  <label for="notePin">PIN catatan (6 digit)</label>
+  <input
+    id="notePin"
+    type="password"
+    inputmode="numeric"
+    pattern="[0-9]{6}"
+    maxlength="6"
+    placeholder="Masukkan 6 digit PIN"
+    autocomplete="new-password"
+  >
+</div>
+          
           <!-- Pilihan checklist -->
           <label class="row">
             <input
@@ -1658,6 +1681,18 @@ themeBtn.onclick = () => {
   // ==========================================
   // 10. SIMPAN CATATAN DAN UNGGAH GAMBAR
   // ==========================================
+  
+$("lockNote").addEventListener("change", () => {
+  $("pinArea").classList.toggle(
+    "hidden",
+    !$("lockNote").checked
+  );
+
+  if (!$("lockNote").checked) {
+    $("notePin").value = "";
+  }
+});
+  
   $("noteForm").onsubmit = async e => {
     e.preventDefault();
 
