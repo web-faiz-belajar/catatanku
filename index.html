@@ -1774,7 +1774,7 @@ $("lockNote").addEventListener("change", () => {
         const { data: signedData, error: signedError } =
   await db.storage
     .from("catatan-gambat")
-    .createSignedUrl(uploadData.path, 60 * 60);
+.createSignedUrl(imagePath, 60 * 60);
 
 if (signedError) {
   throw new Error("Gagal membuat URL foto: " + signedError.message);
