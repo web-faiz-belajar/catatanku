@@ -1,5 +1,10 @@
 
-/* DASAR */
+/* =========================================
+   CATATANKU - MINIMALIST NOTES APP
+   Light | Dark | System
+========================================= */
+
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -15,6 +20,7 @@
   --muted: #858b98;
   --border: #e9ebf0;
   --primary: #5267e8;
+  --danger: #e05252;
   --shadow: 0 5px 20px rgba(0,0,0,0.04);
 }
 
@@ -27,7 +33,12 @@ body.dark {
   --muted: #9ba1ae;
   --border: #303440;
   --primary: #8190ff;
+  --danger: #ef7777;
   --shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+html {
+  min-height: 100%;
 }
 
 body {
@@ -38,7 +49,17 @@ body {
   transition: background 0.25s, color 0.25s;
 }
 
-/* HEADER */
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
 .header {
   max-width: 850px;
   margin: auto;
@@ -60,30 +81,30 @@ body {
   margin-top: 6px;
 }
 
-button {
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-}
-
 .theme-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  font-size: 20px;
+  font-size: 21px;
 }
 
-/* CONTAINER */
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
 .container {
   max-width: 850px;
   margin: auto;
   padding: 10px 20px 100px;
 }
 
-/* SEARCH */
+/* =========================================
+   SEARCH
+========================================= */
+
 .search-box {
   display: flex;
   align-items: center;
@@ -91,7 +112,7 @@ button {
   background: var(--surface);
   border: 1px solid var(--border);
   padding: 14px;
-  border-radius: 13px;
+  border-radius: 14px;
   margin-bottom: 30px;
 }
 
@@ -109,7 +130,14 @@ button {
   font-size: 14px;
 }
 
-/* NOTES HEADER */
+.search-box input::placeholder {
+  color: var(--muted);
+}
+
+/* =========================================
+   NOTES HEADER
+========================================= */
+
 .notes-header {
   display: flex;
   justify-content: space-between;
@@ -126,7 +154,10 @@ button {
   font-size: 12px;
 }
 
-/* NOTES */
+/* =========================================
+   NOTES GRID
+========================================= */
+
 .notes-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -136,13 +167,13 @@ button {
 .note-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  padding: 17px;
-  border-radius: 15px;
-  min-height: 140px;
+  padding: 18px;
+  border-radius: 17px;
+  min-height: 145px;
   box-shadow: var(--shadow);
   cursor: pointer;
-  transition: transform 0.2s;
   overflow: hidden;
+  transition: transform 0.2s, border 0.2s;
 }
 
 .note-card:active {
@@ -150,8 +181,8 @@ button {
 }
 
 .note-card h3 {
-  font-size: 15px;
-  margin-bottom: 10px;
+  font-size: 16px;
+  margin-bottom: 12px;
   overflow-wrap: anywhere;
 }
 
@@ -161,6 +192,7 @@ button {
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -170,11 +202,14 @@ button {
 .note-card small {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   margin-top: 17px;
 }
 
-/* EMPTY STATE */
+/* =========================================
+   EMPTY STATE
+========================================= */
+
 .empty-state {
   text-align: center;
   padding: 60px 15px;
@@ -197,130 +232,277 @@ button {
   font-size: 13px;
 }
 
-/* ADD BUTTON */
+/* =========================================
+   ADD BUTTON
+========================================= */
+
 .add-btn {
   position: fixed;
   bottom: 25px;
   right: 25px;
-  width: 57px;
-  height: 57px;
-  border-radius: 18px;
+
+  width: 58px;
+  height: 58px;
+
+  border-radius: 19px;
   background: var(--primary);
   color: white;
-  font-size: 30px;
+
+  font-size: 31px;
+
   box-shadow: 0 5px 18px rgba(82,103,232,0.3);
+  z-index: 5;
+
+  transition: transform 0.2s;
 }
 
-/* EDITOR */
-.overlay {
+.add-btn:active {
+  transform: scale(0.92);
+}
+
+/* =========================================
+   FULL SCREEN EDITOR
+========================================= */
+
+.editor-page {
+  display: none;
+
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  z-index: 10;
-}
 
-.overlay.active {
-  display: flex;
-}
-
-.editor {
-  background: var(--surface);
   width: 100%;
-  max-width: 500px;
-  border-radius: 20px;
-  padding: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 17px;
-}
+  height: 100vh;
+  height: 100dvh;
 
-.editor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.editor-header h2 {
-  font-size: 18px;
-}
-
-.close-btn {
-  background: transparent;
-  color: var(--muted);
-  font-size: 20px;
-}
-
-#noteTitle,
-#noteContent {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 11px;
   background: var(--bg);
   color: var(--text);
-  outline: none;
-  font-family: inherit;
-  font-size: 14px;
+
+  z-index: 1000;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  flex-direction: column;
 }
+
+.editor-page.active {
+  display: flex;
+}
+
+/* Hide homepage when editor is open */
+
+body.editor-open > .header,
+body.editor-open > .container,
+body.editor-open > .add-btn,
+body.editor-open > footer {
+  display: none !important;
+}
+
+/* =========================================
+   EDITOR TOPBAR
+========================================= */
+
+.editor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    max(15px, env(safe-area-inset-top))
+    20px
+    15px;
+
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.editor-topbar h2 {
+  font-size: 17px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+}
+
+.back-btn {
+  background: transparent;
+  color: var(--text);
+
+  font-size: 27px;
+  padding: 5px 10px;
+}
+
+.top-save-btn {
+  background: var(--primary);
+  color: white;
+
+  padding: 11px 17px;
+  border-radius: 11px;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.top-save-btn:active {
+  opacity: 0.8;
+}
+
+/* =========================================
+   EDITOR CONTENT
+========================================= */
+
+.editor-content {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+
+  padding: 22px 20px;
+  gap: 16px;
+
+  max-width: 850px;
+  width: 100%;
+  margin: auto;
+}
+
+/* TITLE INPUT */
+
+#noteTitle {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+  color: var(--text);
+
+  font-size: 25px;
+  font-weight: 700;
+
+  padding: 12px 0;
+
+  font-family: inherit;
+}
+
+#noteTitle::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+/* NOTE TEXTAREA */
 
 #noteContent {
-  height: 220px;
-  resize: vertical;
-  line-height: 1.6;
+  width: 100%;
+
+  flex: 1;
+  min-height: 55vh;
+
+  border: none;
+  outline: none;
+  resize: none;
+
+  background: transparent;
+  color: var(--text);
+
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.8;
+
+  padding: 10px 0;
 }
 
-#noteTitle:focus,
-#noteContent:focus {
-  border-color: var(--primary);
+#noteContent::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
 }
 
-.editor-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
+/* =========================================
+   DELETE BUTTON
+========================================= */
 
-.delete-btn,
-.save-btn {
-  padding: 13px 17px;
-  border-radius: 10px;
-  font-size: 13px;
+.editor-bottom {
+  padding: 15px 0;
+
+  border-top: 1px solid var(--border);
 }
 
 .delete-btn {
-  background: var(--bg);
-  color: #e05252;
+  background: transparent;
+  color: var(--danger);
+
+  padding: 12px 0;
+  font-size: 14px;
 }
 
-.save-btn {
-  background: var(--primary);
-  color: white;
-  flex: 1;
+.delete-btn:active {
+  opacity: 0.7;
 }
 
-/* FOOTER */
+/* =========================================
+   FOOTER
+========================================= */
+
 footer {
   text-align: center;
   padding: 20px;
+
   color: var(--muted);
   font-size: 11px;
 }
 
-/* RESPONSIVE */
+/* =========================================
+   RESPONSIVE MOBILE
+========================================= */
+
 @media (max-width: 450px) {
-  .notes-grid {
-    grid-template-columns: 1fr;
-  }
 
   .header {
     padding-top: 25px;
   }
 
-  .note-card {
-    min-height: 120px;
+  .notes-grid {
+    grid-template-columns: 1fr;
   }
+
+  .note-card {
+    min-height: 130px;
+  }
+
+  .add-btn {
+    bottom: 25px;
+    right: 22px;
+  }
+
+  .editor-content {
+    padding: 20px;
+  }
+
+  #noteTitle {
+    font-size: 23px;
+  }
+
+  #noteContent {
+    font-size: 16px;
+  }
+}
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 768px) {
+
+  .editor-content {
+    padding: 30px;
+  }
+
+  #noteContent {
+    min-height: 60vh;
+  }
+
 }
