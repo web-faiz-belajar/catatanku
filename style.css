@@ -620,3 +620,100 @@ body.app-enter footer {
     transition: none !important;
   }
 }
+
+/* =================================
+   CATATANKU - MINIMALIST INTRO
+================================= */
+
+#introLoader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  overflow: hidden;
+  transition: opacity 0.6s ease,
+              visibility 0.6s ease;
+}
+
+#introLoader.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.motion-lines {
+  position: relative;
+  width: 170px;
+  height: 170px;
+}
+
+.motion-lines span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.7;
+  transform-origin: center;
+  animation: lineMotion 1.5s ease-in-out infinite;
+}
+
+.motion-lines span:nth-child(1) {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.motion-lines span:nth-child(2) {
+  transform: translate(-50%, -50%) rotate(20deg);
+  animation-delay: 0.1s;
+}
+
+.motion-lines span:nth-child(3) {
+  transform: translate(-50%, -50%) rotate(40deg);
+  animation-delay: 0.2s;
+}
+
+.motion-lines span:nth-child(4) {
+  transform: translate(-50%, -50%) rotate(60deg);
+  animation-delay: 0.3s;
+}
+
+.motion-lines span:nth-child(5) {
+  transform: translate(-50%, -50%) rotate(80deg);
+  animation-delay: 0.4s;
+}
+
+.motion-lines span:nth-child(6) {
+  transform: translate(-50%, -50%) rotate(100deg);
+  animation-delay: 0.5s;
+}
+
+.motion-lines span:nth-child(7) {
+  transform: translate(-50%, -50%) rotate(120deg);
+  animation-delay: 0.6s;
+}
+
+.motion-lines span:nth-child(8) {
+  transform: translate(-50%, -50%) rotate(140deg);
+  animation-delay: 0.7s;
+}
+
+.motion-lines span:nth-child(9) {
+  transform: translate(-50%, -50%) rotate(160deg);
+  animation-delay: 0.8s;
+}
+
+@keyframes lineMotion {
+  0%, 100% {
+    width: 35px;
+    opacity: 0.3;
+  }
+
+  50% {
+    width: 130px;
+    opacity: 0.9;
+  }
+}
