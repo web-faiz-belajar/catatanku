@@ -1,0 +1,326 @@
+
+/* DASAR */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light;
+
+  --bg: #f8f9fc;
+  --surface: #ffffff;
+  --text: #202124;
+  --muted: #858b98;
+  --border: #e9ebf0;
+  --primary: #5267e8;
+  --shadow: 0 5px 20px rgba(0,0,0,0.04);
+}
+
+body.dark {
+  color-scheme: dark;
+
+  --bg: #111318;
+  --surface: #1b1e26;
+  --text: #f2f3f7;
+  --muted: #9ba1ae;
+  --border: #303440;
+  --primary: #8190ff;
+  --shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.25s, color 0.25s;
+}
+
+/* HEADER */
+.header {
+  max-width: 850px;
+  margin: auto;
+  padding: 30px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 {
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.header p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+.theme-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 20px;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 850px;
+  margin: auto;
+  padding: 10px 20px 100px;
+}
+
+/* SEARCH */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 13px;
+  margin-bottom: 30px;
+}
+
+.search-box span {
+  font-size: 23px;
+  color: var(--muted);
+}
+
+.search-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 14px;
+}
+
+/* NOTES HEADER */
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 17px;
+}
+
+.notes-header h2 {
+  font-size: 17px;
+}
+
+.notes-header span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* NOTES */
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 13px;
+}
+
+.note-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 17px;
+  border-radius: 15px;
+  min-height: 140px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.2s;
+  overflow: hidden;
+}
+
+.note-card:active {
+  transform: scale(0.98);
+}
+
+.note-card h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+.note-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.note-card small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 17px;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 15px;
+  display: none;
+}
+
+.empty-icon {
+  font-size: 42px;
+  margin-bottom: 15px;
+  color: var(--primary);
+}
+
+.empty-state h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ADD BUTTON */
+.add-btn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 57px;
+  height: 57px;
+  border-radius: 18px;
+  background: var(--primary);
+  color: white;
+  font-size: 30px;
+  box-shadow: 0 5px 18px rgba(82,103,232,0.3);
+}
+
+/* EDITOR */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  z-index: 10;
+}
+
+.overlay.active {
+  display: flex;
+}
+
+.editor {
+  background: var(--surface);
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editor-header h2 {
+  font-size: 18px;
+}
+
+.close-btn {
+  background: transparent;
+  color: var(--muted);
+  font-size: 20px;
+}
+
+#noteTitle,
+#noteContent {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+#noteContent {
+  height: 220px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+#noteTitle:focus,
+#noteContent:focus {
+  border-color: var(--primary);
+}
+
+.editor-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.delete-btn,
+.save-btn {
+  padding: 13px 17px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.delete-btn {
+  background: var(--bg);
+  color: #e05252;
+}
+
+.save-btn {
+  background: var(--primary);
+  color: white;
+  flex: 1;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 450px) {
+  .notes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    padding-top: 25px;
+  }
+
+  .note-card {
+    min-height: 120px;
+  }
+}
