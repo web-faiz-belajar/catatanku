@@ -1,7 +1,12 @@
 
-// ==================================
-// CATATANKU - JAVASCRIPT
-// ==================================
+/* =========================================
+   CATATANKU
+   MAIN JAVASCRIPT
+========================================= */
+
+// =========================================
+// 1. MENGAMBIL ELEMEN HTML
+// =========================================
 
 const notesContainer = document.getElementById("notesContainer");
 const emptyState = document.getElementById("emptyState");
@@ -21,27 +26,73 @@ const noteContent = document.getElementById("noteContent");
 const saveBtn = document.getElementById("saveBtn");
 const deleteBtn = document.getElementById("deleteBtn");
 
-let notes = JSON.parse(localStorage.getItem("catatanku_notes") || "[]");
-let editingId = null;
+// =========================================
+// 2. DATA CATATAN
+// =========================================
 
-// ==================================
-// PENYIMPANAN
-// ==================================
+let notes = [];
 
-function saveToStorage() {
-  localStorage.setItem("catatanku_notes", JSON.stringify(notes));
+try {
+  const savedNotes = localStorage.getItem("catatanku_notes");
+  const parsedNotes = savedNotes ? JSON.parse(savedNotes) : [];
+
+  notes = Array.isArray(parsedNotes)
+    ? parsedNotes.filter(note =>
+        note &&
+        typeof note === "object" &&
+        typeof note.id === "number" &&
+        typeof note.title === "string" &&
+        typeof note.content === "string"
+      )
+    : [];
+
+} catch (error) {
+  console.error("Gagal membaca catatan:", error);
+  notes = [];
 }
 
-// ==================================
-// TEMA
-// ==================================
+let editingId = null;
 
-let currentTheme = localStorage.getItem("catatanku_theme") || "system";
+// =========================================
+// 3. MENYIMPAN DATA
+// =========================================
+
+function saveToStorage() {
+  try {
+    localStorage.setItem(
+      "catatanku_notes",
+      JSON.stringify(notes)
+    );
+
+    return true;
+
+  } catch (error) {
+    console.error("Gagal menyimpan catatan:", error);
+
+    alert("Catatan gagal disimpan. Periksa penyimpanan browser.");
+
+    return false;
+  }
+}
+
+// =========================================
+// 4. SISTEM TEMA
+// =========================================
+
+let currentTheme =
+  localStorage.getItem("catatanku_theme") || "system";
+
+const themes = ["light", "dark", "system"];
 
 function applyTheme() {
-  const isDark = currentTheme === "dark" ||
-    (currentTheme === "system" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  const systemDark = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+
+  const isDark =
+    currentTheme === "dark" ||
+    (currentTheme === "system" && systemDark);
 
   document.body.classList.toggle("dark", isDark);
 
@@ -50,60 +101,91 @@ function applyTheme() {
     currentTheme === "dark" ? "☾" : "◐";
 
   themeBtn.title = "Tema: " + currentTheme;
+
+  const themeColor = isDark ? "#111318" : "#f8f9fc";
+
+  document.querySelector('meta[name="theme-color"]')
+    .setAttribute("content", themeColor);
 }
 
+// Ganti tema ketika tombol ditekan
+
 themeBtn.addEventListener("click", () => {
-  const themes = ["light", "dark", "system"];
 
   const currentIndex = themes.indexOf(currentTheme);
-  currentTheme = themes[(currentIndex + 1) % themes.length];
+
+  currentTheme = themes[
+    (currentIndex + 1) % themes.length
+  ];
 
   localStorage.setItem("catatanku_theme", currentTheme);
 
   applyTheme();
 });
 
+// Mengikuti perubahan tema HP
+
 const systemTheme = window.matchMedia(
   "(prefers-color-scheme: dark)"
 );
 
 systemTheme.addEventListener("change", () => {
+
   if (currentTheme === "system") {
     applyTheme();
   }
+
 });
 
 applyTheme();
 
-// ==================================
-// MENAMPILKAN CATATAN
-// ==================================
+// =========================================
+// 5. MENAMPILKAN CATATAN
+// =========================================
 
 function renderNotes() {
+
   notesContainer.innerHTML = "";
 
-  const keyword = searchInput.value.toLowerCase().trim();
+  const keyword = searchInput.value
+    .toLowerCase()
+    .trim();
 
-  const filteredNotes = notes.filter(note =>
-    note.title.toLowerCase().includes(keyword) ||
-    note.content.toLowerCase().includes(keyword)
-  );
+  const filteredNotes = notes.filter(note => {
 
-  noteCount.textContent = filteredNotes.length + " catatan";
+    return (
+      note.title.toLowerCase().includes(keyword) ||
+      note.content.toLowerCase().includes(keyword)
+    );
+
+  });
+
+  noteCount.textContent =
+    filteredNotes.length + " catatan";
+
+  // Kondisi catatan kosong
 
   emptyState.style.display =
     filteredNotes.length === 0 ? "block" : "none";
 
   if (filteredNotes.length === 0) {
+
     emptyState.querySelector("h3").textContent =
-      keyword ? "Catatan tidak ditemukan" : "Belum ada catatan";
+      keyword
+        ? "Catatan tidak ditemukan"
+        : "Belum ada catatan";
 
     emptyState.querySelector("p").textContent =
-      keyword ? "Coba kata kunci lainnya." :
-      "Mulai tulis ide atau sesuatu yang penting.";
+      keyword
+        ? "Coba kata kunci lainnya."
+        : "Mulai tulis ide atau sesuatu yang penting.";
+
   }
 
+  // Menampilkan setiap catatan
+
   filteredNotes.forEach(note => {
+
     const card = document.createElement("article");
     card.className = "note-card";
 
@@ -114,75 +196,128 @@ function renderNotes() {
     content.textContent = note.content;
 
     const date = document.createElement("small");
-    date.textContent = note.date;
+    date.textContent = note.date || "";
 
-    card.append(title, content, date);
+    card.appendChild(title);
+    card.appendChild(content);
+    card.appendChild(date);
+
+    // Membuka catatan untuk diedit
 
     card.addEventListener("click", () => {
       openEditor(note.id);
     });
 
     notesContainer.appendChild(card);
+
   });
+
 }
 
-// ==================================
-// MEMBUKA EDITOR
-// ==================================
+// =========================================
+// 6. MEMBUKA HALAMAN EDITOR
+// =========================================
 
 function openEditor(id = null) {
+
   editingId = id;
 
   if (id !== null) {
+
     const note = notes.find(item => item.id === id);
 
     if (!note) return;
 
     editorTitle.textContent = "Edit catatan";
+
     noteTitle.value = note.title;
     noteContent.value = note.content;
+
     deleteBtn.style.display = "block";
 
   } else {
+
     editorTitle.textContent = "Catatan baru";
+
     noteTitle.value = "";
     noteContent.value = "";
+
     deleteBtn.style.display = "none";
+
   }
+
+  // Tampilkan halaman editor
 
   editorOverlay.classList.add("active");
-  noteTitle.focus();
+
+  // Sembunyikan halaman utama
+
+  document.body.classList.add("editor-open");
+
+  // Scroll editor ke atas
+
+  editorOverlay.scrollTop = 0;
+
+  // Fokus ke judul
+
+  setTimeout(() => {
+    noteTitle.focus();
+  }, 100);
+
 }
+
+// =========================================
+// 7. KEMBALI KE HALAMAN UTAMA
+// =========================================
 
 function closeEditorWindow() {
+
   editorOverlay.classList.remove("active");
+
+  document.body.classList.remove("editor-open");
+
   editingId = null;
+
+  noteTitle.value = "";
+  noteContent.value = "";
+
 }
 
+// Tombol kembali
+
+closeEditor.addEventListener("click", () => {
+  closeEditorWindow();
+});
+
+// =========================================
+// 8. TOMBOL TAMBAH CATATAN
+// =========================================
+
 addBtn.addEventListener("click", () => {
+
   openEditor();
+
 });
 
-closeEditor.addEventListener("click", closeEditorWindow);
-
-editorOverlay.addEventListener("click", event => {
-  if (event.target === editorOverlay) {
-    closeEditorWindow();
-  }
-});
-
-// ==================================
-// MENYIMPAN CATATAN
-// ==================================
+// =========================================
+// 9. MENYIMPAN CATATAN
+// =========================================
 
 saveBtn.addEventListener("click", () => {
+
   const title = noteTitle.value.trim();
   const content = noteContent.value.trim();
 
+  // Validasi
+
   if (!title && !content) {
+
     alert("Isi judul atau konten catatan terlebih dahulu.");
+
     return;
   }
+
+  // Tanggal
 
   const now = new Date().toLocaleString("id-ID", {
     day: "numeric",
@@ -192,55 +327,119 @@ saveBtn.addEventListener("click", () => {
     minute: "2-digit"
   });
 
+  // Mode edit
+
   if (editingId !== null) {
-    const note = notes.find(item => item.id === editingId);
 
-    if (note) {
-      note.title = title;
-      note.content = content;
-      note.date = now;
-    }
+    const note = notes.find(
+      item => item.id === editingId
+    );
 
-  } else {
-    notes.unshift({
-      id: Date.now(),
-      title: title,
-      content: content,
-      date: now
-    });
+    if (!note) return;
+
+    note.title = title;
+    note.content = content;
+    note.date = now;
+
   }
 
-  saveToStorage();
+  // Mode catatan baru
+
+  else {
+
+    notes.unshift({
+
+      id: Date.now(),
+
+      title: title,
+
+      content: content,
+
+      date: now
+
+    });
+
+  }
+
+  // Simpan data
+
+  if (!saveToStorage()) return;
+
+  // Perbarui halaman utama
+
   renderNotes();
+
+  // Kembali ke halaman utama
+
   closeEditorWindow();
+
 });
 
-// ==================================
-// MENGHAPUS CATATAN
-// ==================================
+// =========================================
+// 10. MENGHAPUS CATATAN
+// =========================================
 
 deleteBtn.addEventListener("click", () => {
+
   if (editingId === null) return;
 
-  const yakin = confirm("Yakin ingin menghapus catatan ini?");
+  const yakin = confirm(
+    "Yakin ingin menghapus catatan ini?"
+  );
 
   if (!yakin) return;
 
-  notes = notes.filter(note => note.id !== editingId);
+  const previousNotes = notes;
 
-  saveToStorage();
+  notes = notes.filter(
+    note => note.id !== editingId
+  );
+
+  if (!saveToStorage()) {
+
+    notes = previousNotes;
+
+    return;
+  }
+
   renderNotes();
+
   closeEditorWindow();
+
 });
 
-// ==================================
-// PENCARIAN
-// ==================================
+// =========================================
+// 11. PENCARIAN CATATAN
+// =========================================
 
-searchInput.addEventListener("input", renderNotes);
+searchInput.addEventListener("input", () => {
 
-// ==================================
-// MULAI APLIKASI
-// ==================================
+  renderNotes();
+
+});
+
+// =========================================
+// 12. TOMBOL ESCAPE
+// =========================================
+
+document.addEventListener("keydown", event => {
+
+  if (
+    event.key === "Escape" &&
+    editorOverlay.classList.contains("active")
+  ) {
+
+    closeEditorWindow();
+
+  }
+
+});
+
+// =========================================
+// 13. MENJALANKAN APLIKASI
+// =========================================
 
 renderNotes();
+
+console.log("CatatanKu berhasil dijalankan!");
+
