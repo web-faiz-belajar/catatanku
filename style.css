@@ -515,3 +515,93 @@ footer {
 .editor-page:not([hidden]) {
   display: flex !important;
 }
+
+/* =========================================
+   CATATANKU - APP ENTRANCE ANIMATION
+========================================= */
+
+/* Animasi dasar */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+body.app-enter .header {
+  animation: fadeUp 0.55s ease both;
+}
+
+/* Pencarian */
+body.app-enter .search-box {
+  animation: fadeUp 0.55s ease 0.10s both;
+}
+
+/* Judul catatan */
+body.app-enter .notes-header {
+  animation: fadeUp 0.55s ease 0.18s both;
+}
+
+/* Kumpulan kartu */
+body.app-enter .notes-grid {
+  animation: fadeUp 0.6s ease 0.25s both;
+}
+
+/* Empty state */
+body.app-enter .empty-state {
+  animation: fadeUp 0.6s ease 0.25s both;
+}
+
+/* Tombol tambah */
+body.app-enter .add-btn {
+  animation: buttonEnter 0.65s cubic-bezier(.2,.8,.2,1) 0.35s both;
+}
+
+@keyframes buttonEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Footer */
+body.app-enter footer {
+  animation: fadeUp 0.5s ease 0.4s both;
+}
+
+/* Animasi ketika editor dibuka */
+.editor-page.active {
+  animation: editorEnter 0.3s ease both;
+}
+
+@keyframes editorEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aksesibilitas */
+@media (prefers-reduced-motion: reduce) {
+  body.app-enter *,
+  .editor-page.active {
+    animation: none !important;
+    transition: none !important;
+  }
+}
