@@ -1,67 +1,135 @@
 
-const CACHE_NAME = "catatanku-v1";
+/* =========================================
+   CATATANKU - SERVICE WORKER
+   PWA + OFFLINE SUPPORT
+========================================= */
+
+// Versi cache aplikasi
+const CACHE_NAME = "catatanku-v2";
+
+// File utama aplikasi
 const APP_FILES = [
   "./",
   "./index.html",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./style.css",
+  "./script.js"
 ];
 
-self.addEventListener("install", (event) => {
+// =========================================
+// 1. INSTALL
+// =========================================
+
+self.addEventListener("install", event => {
+
+  console.log("CatatanKu: Service Worker installing...");
+
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) =>
-      cache.addAll(APP_FILES)
-    )
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(APP_FILES);
+      })
+      .then(() => {
+        return self.skipWaiting();
+      })
   );
-  self.skipWaiting();
+
 });
 
-self.addEventListener("activate", (event) => {
+// =========================================
+// 2. ACTIVATE
+// =========================================
+
+self.addEventListener("activate", event => {
+
+  console.log("CatatanKu: Service Worker activated");
+
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
+    caches.keys().then(cacheNames => {
+
+      return Promise.all(
+        cacheNames
+          .filter(name => name !== CACHE_NAME)
+          .map(name => caches.delete(name))
+      );
+
+    }).then(() => {
+      return self.clients.claim();
+    })
   );
-  self.clients.claim();
+
 });
 
-self.addEventListener("fetch", (event) => {
+// =========================================
+// 3. FETCH
+// =========================================
+
+self.addEventListener("fetch", event => {
+
   const request = event.request;
 
-  if (
-    request.method !== "GET" ||
-    new URL(request.url).origin !== self.location.origin
-  ) {
-    return;
-  }
+  // Hanya menangani GET
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+
+  // Hanya file dari website sendiri
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
+
     fetch(request)
-      .then((response) => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) =>
-            cache.put(request, copy)
-          );
+      .then(response => {
+
+        // Simpan respons yang berhasil
+        if (response.ok && response.type === "basic") {
+
+          const responseCopy = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, responseCopy);
+          });
+
         }
+
         return response;
-      })
-      .catch(async () => {
-        const cached = await caches.match(request);
-        if (cached) return cached;
 
-        if (request.mode === "navigate") {
-          return (
-            await caches.match("./index.html")
-          ) || Response.error();
+      })
+
+      .catch(async () => {
+
+        // Ambil file dari cache jika offline
+        const cachedResponse = await caches.match(request);
+
+        if (cachedResponse) {
+          return cachedResponse;
         }
 
-        return Response.error();
+        // Fallback halaman utama
+        if (request.mode === "navigate") {
+
+          const homepage = await caches.match("./index.html");
+
+          if (homepage) {
+            return homepage;
+          }
+
+        }
+
+        // Jika file tidak ditemukan
+        return new Response(
+          "Halaman tidak tersedia. Periksa koneksi internet.",
+          {
+            status: 503,
+            headers: {
+              "Content-Type": "text/plain; charset=utf-8"
+            }
+          }
+        );
+
       })
+
   );
+
 });
+
+console.log("CatatanKu Service Worker siap!");
