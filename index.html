@@ -50,7 +50,45 @@
 
   <button id="addBtn" class="add-btn">+</button>
 
-  <div id="editorOverlay" class="overlay">
+  
+<section id="editorOverlay" class="editor-page">
+
+  <header class="editor-topbar">
+    <button id="closeEditor" class="back-btn">
+      ←
+    </button>
+
+    <h2 id="editorTitle">Catatan baru</h2>
+
+    <button id="saveBtn" class="top-save-btn">
+      Simpan
+    </button>
+  </header>
+
+  <main class="editor-content">
+
+    <input
+      type="text"
+      id="noteTitle"
+      placeholder="Judul catatan"
+      maxlength="80"
+    >
+
+    <textarea
+      id="noteContent"
+      placeholder="Mulai menulis sesuatu..."
+    ></textarea>
+
+    <div class="editor-bottom">
+      <button id="deleteBtn" class="delete-btn">
+        Hapus catatan
+      </button>
+    </div>
+
+  </main>
+
+</section>
+
     <div class="editor">
 
       <div class="editor-header">
