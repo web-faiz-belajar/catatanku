@@ -246,14 +246,13 @@ function openEditor(id = null) {
 
   }
 
-  // Tampilkan halaman editor
+// Tampilkan halaman editor
+editorOverlay.hidden = false;
+editorOverlay.classList.add("active");
 
-  editorOverlay.classList.add("active");
-
-  // Sembunyikan halaman utama
-
-  document.body.classList.add("editor-open");
-
+// Sembunyikan halaman utama
+document.body.classList.add("editor-open");
+   
   // Scroll editor ke atas
 
   editorOverlay.scrollTop = 0;
@@ -272,8 +271,11 @@ function openEditor(id = null) {
 
 function closeEditorWindow() {
 
+  // Sembunyikan editor
   editorOverlay.classList.remove("active");
+  editorOverlay.hidden = true;
 
+  // Tampilkan kembali halaman utama
   document.body.classList.remove("editor-open");
 
   editingId = null;
