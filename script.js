@@ -443,6 +443,11 @@ document.addEventListener("keydown", event => {
 
 renderNotes();
 
+// Animasi saat aplikasi pertama kali dibuka
+requestAnimationFrame(() => {
+  document.body.classList.add("app-enter");
+});
+
 console.log("CatatanKu berhasil dijalankan!");
 
 /* =========================================
