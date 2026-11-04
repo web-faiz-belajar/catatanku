@@ -482,3 +482,20 @@ if ("serviceWorker" in navigator) {
   });
 
 }
+
+// =================================
+// CATATANKU - INTRO LOADER
+// =================================
+
+window.addEventListener("load", () => {
+  const introLoader = document.getElementById("introLoader");
+
+  setTimeout(() => {
+    introLoader.classList.add("hide");
+
+    setTimeout(() => {
+      introLoader.remove();
+    }, 600);
+
+  }, 1800);
+});
