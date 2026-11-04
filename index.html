@@ -10,17 +10,19 @@
 </head>
 <body>
 
+  <!-- HEADER -->
   <header class="header">
     <div>
       <h1>CatatanKu</h1>
       <p>Semua ide, tersimpan di sini.</p>
     </div>
 
-    <button id="themeBtn" class="theme-btn" aria-label="Ganti tema">
+    <button id="themeBtn" class="theme-btn">
       ☀
     </button>
   </header>
 
+  <!-- HALAMAN UTAMA -->
   <main class="container">
 
     <div class="search-box">
@@ -48,53 +50,27 @@
 
   </main>
 
+  <!-- TOMBOL TAMBAH -->
   <button id="addBtn" class="add-btn">+</button>
 
-  
-<section id="editorOverlay" class="editor-page">
+  <!-- HALAMAN EDITOR -->
+  <section id="editorOverlay" class="editor-page">
 
-  <header class="editor-topbar">
-    <button id="closeEditor" class="back-btn">
-      ←
-    </button>
+    <header class="editor-topbar">
 
-    <h2 id="editorTitle">Catatan baru</h2>
-
-    <button id="saveBtn" class="top-save-btn">
-      Simpan
-    </button>
-  </header>
-
-  <main class="editor-content">
-
-    <input
-      type="text"
-      id="noteTitle"
-      placeholder="Judul catatan"
-      maxlength="80"
-    >
-
-    <textarea
-      id="noteContent"
-      placeholder="Mulai menulis sesuatu..."
-    ></textarea>
-
-    <div class="editor-bottom">
-      <button id="deleteBtn" class="delete-btn">
-        Hapus catatan
+      <button id="closeEditor" class="back-btn">
+        ←
       </button>
-    </div>
 
-  </main>
+      <h2 id="editorTitle">Catatan baru</h2>
 
-</section>
+      <button id="saveBtn" class="top-save-btn">
+        Simpan
+      </button>
 
-    <div class="editor">
+    </header>
 
-      <div class="editor-header">
-        <h2 id="editorTitle">Catatan baru</h2>
-        <button id="closeEditor" class="close-btn">✕</button>
-      </div>
+    <main class="editor-content">
 
       <input
         type="text"
@@ -108,18 +84,24 @@
         placeholder="Mulai menulis sesuatu..."
       ></textarea>
 
-      <div class="editor-footer">
-        <button id="deleteBtn" class="delete-btn">Hapus</button>
-        <button id="saveBtn" class="save-btn">Simpan catatan</button>
+      <div class="editor-bottom">
+
+        <button id="deleteBtn" class="delete-btn">
+          Hapus catatan
+        </button>
+
       </div>
 
-    </div>
-  </div>
+    </main>
 
+  </section>
+
+  <!-- FOOTER -->
   <footer>
     <p>CatatanKu © 2026</p>
   </footer>
 
   <script src="script.js"></script>
+
 </body>
 </html>
