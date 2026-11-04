@@ -445,3 +445,35 @@ renderNotes();
 
 console.log("CatatanKu berhasil dijalankan!");
 
+/* =========================================
+   14. SERVICE WORKER REGISTRATION
+========================================= */
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener("load", () => {
+
+    navigator.serviceWorker
+      .register("./service-worker.js")
+
+      .then(registration => {
+
+        console.log(
+          "Service Worker berhasil:",
+          registration.scope
+        );
+
+      })
+
+      .catch(error => {
+
+        console.error(
+          "Service Worker gagal:",
+          error
+        );
+
+      });
+
+  });
+
+}
