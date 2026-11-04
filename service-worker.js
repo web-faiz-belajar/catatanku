@@ -5,7 +5,7 @@
 ========================================= */
 
 // Versi cache aplikasi
-const CACHE_NAME = "catatanku-v2";
+const CACHE_NAME = "catatanku-v3";
 
 // File utama aplikasi
 const APP_FILES = [
@@ -21,16 +21,10 @@ const APP_FILES = [
 
 self.addEventListener("install", event => {
 
-  console.log("CatatanKu: Service Worker installing...");
-
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(APP_FILES);
-      })
-      .then(() => {
-        return self.skipWaiting();
-      })
+      .then(cache => cache.addAll(APP_FILES))
+      .then(() => self.skipWaiting())
   );
 
 });
@@ -41,20 +35,21 @@ self.addEventListener("install", event => {
 
 self.addEventListener("activate", event => {
 
-  console.log("CatatanKu: Service Worker activated");
-
   event.waitUntil(
+
     caches.keys().then(cacheNames => {
 
       return Promise.all(
         cacheNames
-          .filter(name => name !== CACHE_NAME)
+          .filter(name =>
+            name.startsWith("catatanku-") &&
+            name !== CACHE_NAME
+          )
           .map(name => caches.delete(name))
       );
 
-    }).then(() => {
-      return self.clients.claim();
-    })
+    }).then(() => self.clients.claim())
+
   );
 
 });
@@ -67,27 +62,22 @@ self.addEventListener("fetch", event => {
 
   const request = event.request;
 
-  // Hanya menangani GET
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
 
-  // Hanya file dari website sendiri
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
 
     fetch(request)
-      .then(response => {
+      .then(async response => {
 
-        // Simpan respons yang berhasil
         if (response.ok && response.type === "basic") {
 
-          const responseCopy = response.clone();
+          const cache = await caches.open(CACHE_NAME);
 
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(request, responseCopy);
-          });
+          await cache.put(request, response.clone());
 
         }
 
@@ -97,25 +87,18 @@ self.addEventListener("fetch", event => {
 
       .catch(async () => {
 
-        // Ambil file dari cache jika offline
-        const cachedResponse = await caches.match(request);
+        const cached = await caches.match(request);
 
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+        if (cached) return cached;
 
-        // Fallback halaman utama
         if (request.mode === "navigate") {
 
           const homepage = await caches.match("./index.html");
 
-          if (homepage) {
-            return homepage;
-          }
+          if (homepage) return homepage;
 
         }
 
-        // Jika file tidak ditemukan
         return new Response(
           "Halaman tidak tersedia. Periksa koneksi internet.",
           {
@@ -132,4 +115,4 @@ self.addEventListener("fetch", event => {
 
 });
 
-console.log("CatatanKu Service Worker siap!");
+console.log("CatatanKu Service Worker v3 aktif!");
