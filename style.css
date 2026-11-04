@@ -506,3 +506,12 @@ footer {
   }
 
 }
+/* EDITOR HIDDEN FIX */
+
+.editor-page[hidden] {
+  display: none !important;
+}
+
+.editor-page:not([hidden]) {
+  display: flex !important;
+}
